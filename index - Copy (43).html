@@ -1,0 +1,3648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Multi-Tool Application</title>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2ecc71;
+      --danger-color: #e74c3c;
+      --warning-color: #f39c12;
+      --dark-color: #2c3e50;
+      --light-color: #ecf0f1;
+      --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      --card-bg: #333;
+      --text-light: white;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #222;
+      color: #fff;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      color: var(--light-color);
+      margin-bottom: 10px;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin: 30px 0 15px;
+      color: var(--primary-color);
+      font-size: 24px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+    }
+    
+    .tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .tabs-section {
+      background: #444;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 800px;
+    }
+    
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    
+    .tab-button {
+      padding: 10px 15px;
+      background-color: #555;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      border-radius: 5px;
+      color: white;
+      white-space: nowrap;
+    }
+    
+    .tab-button:hover {
+      background-color: #666;
+    }
+    
+    .tab-button.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.5s ease;
+      color: var(--text-light);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Common Styles */
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    .input-group input, 
+    .input-group select,
+    .input-group textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #444;
+      color: white;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      color: white;
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: #27ae60;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+    }
+    
+    .btn-warning:hover {
+      background-color: #d35400;
+    }
+    
+    .btn-info {
+      background-color: var(--primary-color);
+    }
+    
+    .btn-info:hover {
+      background-color: #2980b9;
+    }
+    
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      font-size: 18px;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    /* Image Editor Styles */
+    #previewContainer {
+      position: relative;
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+    
+    #imagePreview, #videoPreview {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+    }
+    
+    #overlayContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    #cropBox {
+      position: absolute;
+      border: 2px dashed red;
+      pointer-events: all;
+      display: none;
+      resize: both;
+      overflow: auto;
+      cursor: move;
+    }
+    
+    #cropBox .resize-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: red;
+      bottom: 0;
+      right: 0;
+      cursor: se-resize;
+    }
+    
+    .controls-section {
+      margin-bottom: 20px;
+      background: #2d2d2d;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    
+    .controls-section h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    
+    .crop-size-inputs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    /* Calculator Styles */
+    .calculator-1 {
+      width: 320px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .calculator-1 .display {
+      width: 100%;
+      height: 60px;
+      margin-bottom: 20px;
+      padding: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: right;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: #f9f9f9;
+      box-sizing: border-box;
+      color: #333;
+    }
+    
+    .calculator-1 .buttons {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .calculator-1 .button {
+      width: 100%;
+      height: 60px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .calculator-1 .button:hover {
+      background: #45a049;
+    }
+    
+    .calculator-1 .button.operator {
+      background: #ff9500;
+    }
+    
+    .calculator-1 .button.operator:hover {
+      background: #e08900;
+    }
+    
+    .calculator-1 .button.clear {
+      background: #f44336;
+    }
+    
+    .calculator-1 .button.clear:hover {
+      background: #d32f2f;
+    }
+    
+    .calculator-1 .button.equals {
+      background: #2196F3;
+      grid-column: span 2;
+    }
+    
+    .calculator-1 .button.equals:hover {
+      background: #1e88e5;
+    }
+    
+    .calculator-2 {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    
+    .calculator-2 #display2 {
+      width: 100%;
+      height: 50px;
+      font-size: 24px;
+      text-align: right;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background: #444;
+      color: #fff;
+    }
+    
+    .calculator-2 .buttons {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+    }
+    
+    .calculator-2 button {
+      padding: 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background: #555;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .calculator-2 button:hover {
+      background: #777;
+    }
+    
+    .calculator-2 .equals {
+      grid-column: span 1;
+      background: #f39c12;
+    }
+    
+    .calculator-2 .equals:hover {
+      background: #e67e22;
+    }
+    
+    /* Scientific Calculator */
+    .scientific-calculator {
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .scientific-calculator .display {
+      width: 100%;
+      height: 60px;
+      margin-bottom: 20px;
+      padding: 10px;
+      font-size: 24px;
+      text-align: right;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #444;
+      color: #fff;
+    }
+    
+    .scientific-calculator .button {
+      width: 60px;
+      height: 40px;
+      margin: 5px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background: #555;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .scientific-calculator .button:hover {
+      background: #666;
+    }
+    
+    .scientific-calculator .button:active {
+      background: #777;
+    }
+    
+    .scientific-calculator .row {
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* Notes App */
+    .note-container {
+      background: #2d2d2d;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .note-container h2 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .note-container textarea {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      font-family: Arial,sans-serif;
+      font-size: 1em;
+      resize: vertical;
+      background: #444;
+      color: #fff;
+      min-height: 100px;
+    }
+    
+    .notes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .note {
+      background: #444;
+      padding: 15px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .note-text {
+      word-wrap: break-word;
+      margin-bottom: 10px;
+    }
+    
+    .note-timestamp {
+      font-size: 0.8em;
+      color: #999;
+      margin-bottom: 10px;
+    }
+    
+    .note-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .note-actions button {
+      width: auto;
+      padding: 5px 10px;
+      font-size: 0.9em;
+    }
+    
+    .edit-btn {
+      background: #28a745;
+    }
+    
+    .edit-btn:hover {
+      background: #218838;
+    }
+    
+    .delete-btn {
+      background: #dc3545;
+    }
+    
+    .delete-btn:hover {
+      background: #c82333;
+    }
+    
+    /* Translation App */
+    .translation-container {
+      text-align: center;
+    }
+    
+    .translation-container h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    
+    .translation-container textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      border: 1px solid #666;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      resize: none;
+      background: #555;
+      color: #fff;
+    }
+    
+    .translation-container select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #666;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      background: #555;
+      color: #fff;
+    }
+    
+    .translation-container button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    
+    .translation-container button:hover {
+      background: #0056b3;
+    }
+    
+    .translation-container .output {
+      margin-top: 20px;
+      padding: 10px;
+      background: #555;
+      border: 1px solid #666;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: left;
+      color: #fff;
+      min-height: 50px;
+    }
+    
+    .translation-container .speak-button {
+      background: #28a745;
+    }
+    
+    .translation-container .speak-button:hover {
+      background: #218838;
+    }
+    
+    /* Binary Converter */
+    #binary-result {
+      text-align: center;
+    }
+    
+    /* Age Calculator */
+    #age-result {
+      text-align: center;
+    }
+    
+    /* Stopwatch */
+    #stopwatch-display {
+      font-size: 48px;
+      text-align: center;
+      margin: 20px 0;
+      font-family: monospace;
+    }
+    
+    /* Password Checker */
+    #strength-meter {
+      height: 10px;
+      background-color: #444;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    
+    #strength-bar {
+      height: 100%;
+      width: 0;
+      background-color: red;
+      transition: width 0.3s, background-color 0.3s;
+    }
+    
+    .criteria {
+      text-align: left;
+      margin-top: 10px;
+    }
+    
+    .criteria span {
+      display: block;
+      margin: 5px 0;
+    }
+    
+    .criteria span.valid {
+      color: var(--secondary-color);
+    }
+    
+    .criteria span.invalid {
+      color: var(--danger-color);
+    }
+    
+    /* QR Generator */
+    #qrcode {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* Timer */
+    #timer-display {
+      font-size: 48px;
+      text-align: center;
+      margin: 20px 0;
+      font-family: monospace;
+    }
+    
+    .timer-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .timer-inputs input {
+      width: 80px;
+      padding: 10px;
+      font-size: 18px;
+      text-align: center;
+      border: none;
+      border-radius: 5px;
+      background: #444;
+      color: white;
+    }
+    
+    /* Password Generator */
+    #password-display {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      margin: 20px 0;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      background: #444;
+      color: white;
+    }
+    
+    .password-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .password-options label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* Currency Converter */
+    .currency-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .currency-group .input-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    /* Enhanced Drawing App Styles */
+    .drawing-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 500px;
+    }
+    
+    .color-picker {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    
+    .color-option {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+    
+    .color-option.selected {
+      border-color: #000;
+    }
+    
+    .brush-size {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    
+    #brush-size {
+      width: 80px;
+    }
+    
+    #current-color {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+    }
+    
+    /* Drawing Canvas */
+    #drawing-canvas {
+      border: 2px solid #000;
+      background-color: white;
+      display: block;
+      margin: 0 auto;
+      cursor: crosshair;
+    }
+    
+    /* Calendar */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day {
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .calendar-day:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .calendar-day.today {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+    }
+    
+    .calendar-day.empty {
+      visibility: hidden;
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+    }
+    
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      padding: 20px;
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      color: #fff;
+    }
+    
+    #history-button {
+      margin-top: 10px;
+      width: 100%;
+      background: #555;
+      color: #fff;
+    }
+    
+    #history-list {
+      margin-top: 10px;
+      padding-left: 20px;
+      color: #fff;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .tabs {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      
+      .tab-button {
+        padding: 10px;
+        min-width: 100px;
+      }
+      
+      #previewContainer {
+        max-height: 200px;
+      }
+      
+      .calculator-1, .calculator-2 {
+        width: 100%;
+      }
+      
+      .note-container {
+        width: 100%;
+      }
+      
+      .input-area {
+        flex-direction: column;
+      }
+      
+      .timer-inputs {
+        flex-wrap: wrap;
+      }
+      
+      .timer-inputs input {
+        width: 60px;
+      }
+      
+      .password-options {
+        grid-template-columns: 1fr;
+      }
+      
+      .currency-group {
+        flex-direction: column;
+      }
+      
+      .drawing-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Ultimate Multi-Tool Application</h1>
+      <p>All your essential tools in one place</p>
+    </header>
+    
+    <!-- Apps Section (First 6 tools) -->
+    <h2 class="section-title">Apps</h2>
+    <div class="tabs-container">
+      <div class="tabs-section">
+        <div class="tabs">
+          <button class="tab-button active" data-tab="imageEditor">Image Editor</button>
+          <button class="tab-button" data-tab="calculator1">Basic Calc 1</button>
+          <button class="tab-button" data-tab="calculator2">Basic Calc 2</button>
+          <button class="tab-button" data-tab="scientificCalc">Scientific Calc</button>
+          <button class="tab-button" data-tab="notes">Notes</button>
+          <button class="tab-button" data-tab="translation">Translation</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 10 Tools Section (Remaining 10 tools) -->
+    <h2 class="section-title">10 Tools</h2>
+    <div class="tabs-container">
+      <div class="tabs-section">
+        <div class="tabs">
+          <button class="tab-button" data-tab="binary">Binary Converter</button>
+          <button class="tab-button" data-tab="age">Age Calculator</button>
+          <button class="tab-button" data-tab="stopwatch">Stopwatch</button>
+          <button class="tab-button" data-tab="password-checker">Password Checker</button>
+          <button class="tab-button" data-tab="qr">QR Generator</button>
+          <button class="tab-button" data-tab="timer">Timer</button>
+          <button class="tab-button" data-tab="password-generator">Password Generator</button>
+          <button class="tab-button" data-tab="converter">Currency Converter</button>
+          <button class="tab-button" data-tab="drawing">Drawing App</button>
+          <button class="tab-button" data-tab="calendar">Calendar</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Contents -->
+    <!-- Image Editor Tab -->
+    <div id="imageEditor" class="tab-content active">
+      <h2>Image Editor</h2>
+      <input type="file" id="fileUpload" accept="image/*, video/*" class="controls">
+      <div id="editor" style="display: none;">
+        <div id="previewContainer">
+          <img id="imagePreview" src="#" alt="Preview" style="display: none;">
+          <video id="videoPreview" controls style="display: none;"></video>
+          <div id="overlayContainer"></div>
+          <div id="cropBox"><div class="resize-handle"></div></div>
+        </div>
+        <div id="controls">
+          <div class="controls-section">
+            <h2>Text & Design</h2>
+            <input type="text" id="textInput" placeholder="Enter text">
+            <input type="color" id="textColor" value="#ffffff">
+            <input type="number" id="textSize" placeholder="Font size" value="24">
+            <button onclick="addText()">Add Text</button>
+            <button onclick="addShape('rectangle')">Add Rectangle</button>
+            <button onclick="addShape('circle')">Add Circle</button>
+          </div>
+          <div class="controls-section">
+            <h2>Filters</h2>
+            <label for="grayscale">Grayscale:</label>
+            <input type="range" id="grayscale" min="0" max="1" step="0.1" value="0" oninput="applyGrayscale(this.value)">
+            <label for="sepia">Sepia:</label>
+            <input type="range" id="sepia" min="0" max="1" step="0.1" value="0" oninput="applySepia(this.value)">
+            <label for="brightness">Brightness:</label>
+            <input type="range" id="brightness" min="0" max="2" step="0.1" value="1" oninput="applyBrightness(this.value)">
+            <label for="contrast">Contrast:</label>
+            <input type="range" id="contrast" min="0" max="2" step="0.1" value="1" oninput="applyContrast(this.value)">
+            <label for="blur">Blur:</label>
+            <input type="range" id="blur" min="0" max="10" step="1" value="0" oninput="applyBlur(this.value)">
+            <label for="hueRotation">Hue Rotation:</label>
+            <input type="range" id="hueRotation" min="0" max="360" step="1" value="0" oninput="applyHueRotation(this.value)">
+            <label for="saturation">Saturation:</label>
+            <input type="range" id="saturation" min="0" max="2" step="0.1" value="1" oninput="applySaturation(this.value)">
+            <label for="invert">Invert:</label>
+            <input type="range" id="invert" min="0" max="1" step="0.1" value="0" oninput="applyInvert(this.value)">
+          </div>
+          <div class="controls-section">
+            <h2>Effects</h2>
+            <button onclick="applyEffect('vintage')">Vintage Effect</button>
+            <button onclick="applyEffect('blur')">Blur Effect</button>
+            <button onclick="applyEffect('sepia')">Sepia Effect</button>
+            <button onclick="applyEffect('grayscale')">Grayscale Effect</button>
+            <button onclick="applyEffect('invert')">Invert Effect</button>
+            <button onclick="applyEffect('saturate')">Saturate Effect</button>
+            <button onclick="applyEffect('hue-rotate')">Hue Rotate Effect</button>
+            <button onclick="applyEffect('shadow')">Shadow Effect</button>
+            <button onclick="applyEffect('glow')">Glow Effect</button>
+          </div>
+          <div class="controls-section">
+            <h2>Crop</h2>
+            <div class="crop-size-inputs">
+              <input type="number" id="cropWidth" placeholder="Width (px)" min="1">
+              <input type="number" id="cropHeight" placeholder="Height (px)" min="1">
+            </div>
+            <button onclick="startCrop()">Start Crop</button>
+            <button onclick="applyCrop()">Apply Crop</button>
+            <button onclick="cancelCrop()">Cancel Crop</button>
+            <button onclick="setCropSize()">Set Crop Size</button>
+          </div>
+          <div class="controls-section">
+            <h2>Download</h2>
+            <button onclick="downloadMedia()">Download Edited Media</button>
+          </div>
+          <div class="controls-section">
+            <h2>Reset</h2>
+            <button id="resetButton" onclick="resetAll()">Reset All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Basic Calculator 1 Tab -->
+    <div id="calculator1" class="tab-content">
+      <h2>Basic Calculator (Type 1)</h2>
+      <div class="calculator-1">
+        <input class="display" id="display1" type="text" readonly aria-label="Calculator display">
+        <ul class="buttons">
+          <li><button class="button clear" onclick="clearDisplay1()">C</button></li>
+          <li><button class="button operator" onclick="backspace1()">DEL</button></li>
+          <li><button class="button operator" onclick="appendDisplay1('/')">/</button></li>
+          <li><button class="button operator" onclick="appendDisplay1('*')">*</button></li>
+          <li><button class="button" onclick="appendDisplay1('7')">7</button></li>
+          <li><button class="button" onclick="appendDisplay1('8')">8</button></li>
+          <li><button class="button" onclick="appendDisplay1('9')">9</button></li>
+          <li><button class="button operator" onclick="appendDisplay1('-')">-</button></li>
+          <li><button class="button" onclick="appendDisplay1('4')">4</button></li>
+          <li><button class="button" onclick="appendDisplay1('5')">5</button></li>
+          <li><button class="button" onclick="appendDisplay1('6')">6</button></li>
+          <li><button class="button operator" onclick="appendDisplay1('+')">+</button></li>
+          <li><button class="button" onclick="appendDisplay1('1')">1</button></li>
+          <li><button class="button" onclick="appendDisplay1('2')">2</button></li>
+          <li><button class="button" onclick="appendDisplay1('3')">3</button></li>
+          <li><button class="button equals" onclick="calculate1()">=</button></li>
+          <li><button class="button" onclick="appendDisplay1('0')" style="grid-column: span 2;">0</button></li>
+          <li><button class="button" onclick="appendDisplay1('.')">.</button></li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Basic Calculator 2 Tab -->
+    <div id="calculator2" class="tab-content">
+      <h2>Basic Calculator (Type 2)</h2>
+      <div class="calculator-2">
+        <input type="text" id="display2" disabled>
+        <div class="buttons">
+          <button onclick="clearDisplay2()">C</button>
+          <button onclick="appendToDisplay2('/')">/</button>
+          <button onclick="appendToDisplay2('*')">*</button>
+          <button onclick="appendToDisplay2('-')">-</button>
+          <button onclick="appendToDisplay2('7')">7</button>
+          <button onclick="appendToDisplay2('8')">8</button>
+          <button onclick="appendToDisplay2('9')">9</button>
+          <button onclick="appendToDisplay2('+')">+</button>
+          <button onclick="appendToDisplay2('4')">4</button>
+          <button onclick="appendToDisplay2('5')">5</button>
+          <button onclick="appendToDisplay2('6')">6</button>
+          <button onclick="calculate2()" class="equals">=</button>
+          <button onclick="appendToDisplay2('1')">1</button>
+          <button onclick="appendToDisplay2('2')">2</button>
+          <button onclick="appendToDisplay2('3')">3</button>
+          <button onclick="appendToDisplay2('0')">0</button>
+          <button onclick="appendToDisplay2('.')">.</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scientific Calculator Tab -->
+    <div id="scientificCalc" class="tab-content">
+      <h2>Scientific Calculator</h2>
+      <div class="scientific-calculator">
+        <div class="display" id="sciDisplay">0</div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('sin')">sin</button>
+          <button class="button col-3" onclick="sciClickButton('cos')">cos</button>
+          <button class="button col-3" onclick="sciClickButton('tan')">tan</button>
+          <button class="button col-3" onclick="sciClickButton('deg')">DegRad</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('asin')">sin<sup>-1</sup></button>
+          <button class="button col-3" onclick="sciClickButton('acos')">cos<sup>-1</sup></button>
+          <button class="button col-3" onclick="sciClickButton('atan')">tan<sup>-1</sup></button>
+          <button class="button col-3" onclick="sciClickButton(Math.PI)">π</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('e')">e</button>
+          <button class="button col-3" onclick="sciClickButton('*')">x*y</button>
+          <button class="button col-3" onclick="sciClickButton('x3')">x3</button>
+          <button class="button col-3" onclick="sciClickButton('x2')">x2</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('exp')">exp</button>
+          <button class="button col-3" onclick="sciClickButton('10x')">10x</button>
+          <button class="button col-3" onclick="sciClickButton('y√x')">y√x</button>
+          <button class="button col-3" onclick="sciClickButton('3√x')">3√x</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('√x')">√x</button>
+          <button class="button col-3" onclick="sciClickButton('ln')">ln</button>
+          <button class="button col-3" onclick="sciClickButton('log')">log</button>
+          <button class="button col-3" onclick="sciClickButton('(')" > ( </button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton(')')"> ) </button>
+          <button class="button col-3" onclick="sciClickButton('1/x')">1/x</button>
+          <button class="button col-3" onclick="sciClickButton('%')">%</button>
+          <button class="button col-3" onclick="sciClickButton('n!')">n!</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('7')">7</button>
+          <button class="button col-3" onclick="sciClickButton('8')">8</button>
+          <button class="button col-3" onclick="sciClickButton('9')">9</button>
+          <button class="button col-3" onclick="sciClickButton('+')">+</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('Back')">Back</button>
+          <button class="button col-3" onclick="sciClickButton('4')">4</button>
+          <button class="button col-3" onclick="sciClickButton('5')">5</button>
+          <button class="button col-3" onclick="sciClickButton('6')">6</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('-')">-</button>
+          <button class="button col-3" onclick="sciClickButton('1')">1</button>
+          <button class="button col-3" onclick="sciClickButton('2')">2</button>
+          <button class="button col-3" onclick="sciClickButton('3')">3</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('*')">×</button>
+          <button class="button col-3" onclick="sciClickButton('0')">0</button>
+          <button class="button col-3" onclick="sciClickButton('.')">.</button>
+          <button class="button col-3" onclick="sciClickButton('EXP')">EXP</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('÷')">÷</button>
+          <button class="button col-3" onclick="sciClickButton('M+')">M+</button>
+          <button class="button col-3" onclick="sciClickButton('M-')">M-</button>
+          <button class="button col-3" onclick="sciClickButton('±')">±</button>
+        </div>
+        <div class="row">
+          <button class="button col-3" onclick="sciClickButton('RND')">RND</button>
+          <button class="button col-3" onclick="sciClickButton('AC')">AC</button>
+          <button class="button col-3" onclick="sciClickButton('=')">=</button>
+          <button class="button col-3" onclick="sciClickButton('MR')">MR</button>
+        </div>
+        <button id="history-button" class="button" onclick="showHistory()">History</button>
+        <ul id="history-list"></ul>
+      </div>
+    </div>
+    
+    <!-- Notes Tab -->
+    <div id="notes" class="tab-content">
+      <div class="note-container">
+        <h2>Note-Taking App</h2>
+        <div class="input-area">
+          <textarea id="noteInput" placeholder="Add a new note"></textarea>
+          <button onclick="addNote()">Add Note</button>
+        </div>
+        <div class="notes-list" id="notesList"></div>
+      </div>
+    </div>
+    
+    <!-- Translation Tab -->
+    <div id="translation" class="tab-content">
+      <div class="translation-container">
+        <h2>English to Other Language Translation</h2>
+        <textarea id="inputText" placeholder="Enter text in English..."></textarea>
+        <select id="languageSelect">
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="hi">Hindi</option>
+          <option value="bn">Bengali</option>
+          <option value="zh-CN">Chinese (Simplified)</option>
+          <option value="ja">Japanese</option>
+          <option value="ar">Arabic</option>
+          <option value="ru">Russian</option>
+          <option value="pt">Portuguese</option>
+        </select>
+        <button onclick="translateText()">Translate</button>
+        <div class="output" id="outputText"></div>
+        <button class="speak-button" onclick="speakTranslatedText()">Speak Translated Text</button>
+      </div>
+    </div>
+    
+    <!-- Binary Converter Tab -->
+    <div id="binary" class="tab-content">
+      <h2>Number to Binary Converter</h2>
+      <div class="input-group">
+        <label for="number">Enter a Decimal Number:</label>
+        <input type="number" id="binary-number" placeholder="Enter a number">
+      </div>
+      <button id="convert-button" class="btn-primary">Convert to Binary</button>
+      <div id="binary-result" class="result"></div>
+    </div>
+    
+    <!-- Age Calculator Tab -->
+    <div id="age" class="tab-content">
+      <h2>Age Calculator</h2>
+      <div class="input-group">
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob">
+      </div>
+      <button id="calculate-button" class="btn-primary">Calculate Age</button>
+      <div id="age-result" class="result"></div>
+    </div>
+    
+    <!-- Stopwatch Tab -->
+    <div id="stopwatch" class="tab-content">
+      <h2>Simple Stopwatch</h2>
+      <div id="stopwatch-display">00:00:00.000</div>
+      <div class="controls">
+        <button id="start-button" class="btn-primary">Start</button>
+        <button id="stop-button" class="btn-danger">Stop</button>
+        <button id="reset-button" class="btn-info">Reset</button>
+      </div>
+    </div>
+    
+    <!-- Password Checker Tab -->
+    <div id="password-checker" class="tab-content">
+      <h2>Password Strength Checker</h2>
+      <input type="text" id="password-input" placeholder="Enter your password">
+      <div id="strength-meter">
+        <div id="strength-bar"></div>
+      </div>
+      <div id="strength-text" class="result">Strength: None</div>
+      <div class="criteria">
+        <span id="length">At least 8 characters</span>
+        <span id="uppercase">Contains uppercase letters</span>
+        <span id="lowercase">Contains lowercase letters</span>
+        <span id="number">Contains numbers</span>
+        <span id="special">Contains special characters</span>
+      </div>
+    </div>
+    
+    <!-- QR Generator Tab -->
+    <div id="qr" class="tab-content">
+      <h2>QR Code Generator</h2>
+      <div class="input-group">
+        <label for="qr-input">Enter text or URL:</label>
+        <input type="text" id="qr-input" placeholder="Enter text or URL">
+      </div>
+      <div id="qrcode"></div>
+    </div>
+    
+    <!-- Timer Tab -->
+    <div id="timer" class="tab-content">
+      <h2>Countdown Timer</h2>
+      <div id="timer-display">00:00:00</div>
+      <div class="timer-inputs">
+        <input type="number" id="hours" min="0" placeholder="HH">
+        <input type="number" id="minutes" min="0" max="59" placeholder="MM">
+        <input type="number" id="seconds" min="0" max="59" placeholder="SS">
+      </div>
+      <div class="controls">
+        <button id="timer-start-button" class="btn-primary">Start</button>
+        <button id="timer-reset-button" class="btn-info" disabled>Reset</button>
+      </div>
+    </div>
+    
+    <!-- Password Generator Tab -->
+    <div id="password-generator" class="tab-content">
+      <h2>Password Generator</h2>
+      <input type="text" id="password-display" readonly>
+      <div class="password-options">
+        <label>
+          <input type="number" id="pwd-length" min="4" max="50" value="12"> Password Length
+        </label>
+        <label>
+          <input type="checkbox" id="pwd-uppercase" checked> Uppercase Letters
+        </label>
+        <label>
+          <input type="checkbox" id="pwd-numbers" checked> Numbers
+        </label>
+        <label>
+          <input type="checkbox" id="pwd-symbols" checked> Symbols
+        </label>
+      </div>
+      <div class="controls">
+        <button id="generate-button" class="btn-primary">Generate Password</button>
+        <button id="copy-button" class="btn-info">Copy to Clipboard</button>
+      </div>
+    </div>
+    
+    <!-- Currency Converter Tab -->
+    <div id="converter" class="tab-content">
+      <h2>Currency Converter</h2>
+      <div class="input-group">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" placeholder="Enter amount">
+      </div>
+      <div class="currency-group">
+        <div class="input-group">
+          <label for="from-currency">From Currency:</label>
+          <select id="from-currency">
+            <option value="USD">USD (United States Dollar)</option>
+            <option value="EUR">EUR (Euro)</option>
+            <option value="GBP">GBP (British Pound)</option>
+            <option value="JPY">JPY (Japanese Yen)</option>
+            <option value="INR">INR (Indian Rupee)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="to-currency">To Currency:</label>
+          <select id="to-currency">
+            <option value="USD">USD (United States Dollar)</option>
+            <option value="EUR">EUR (Euro)</option>
+            <option value="GBP">GBP (British Pound)</option>
+            <option value="JPY">JPY (Japanese Yen)</option>
+            <option value="INR">INR (Indian Rupee)</option>
+          </select>
+        </div>
+      </div>
+      <button id="currency-convert-button" class="btn-primary">Convert</button>
+      <div id="currency-result" class="result"></div>
+    </div>
+    
+    <!-- Drawing App Tab -->
+    <div id="drawing" class="tab-content">
+      <h2>Drawing App</h2>
+      <div style="text-align: center;">
+        <canvas id="drawing-canvas"></canvas>
+      </div>
+      <div class="drawing-controls">
+        <div class="color-picker">
+          <div id="current-color" style="background-color: #000000;"></div>
+          <input type="color" id="color-selector" value="#000000">
+        </div>
+        <div class="brush-size">
+          <label for="brush-size">Size:</label>
+          <input type="range" id="brush-size" min="1" max="50" value="5">
+        </div>
+        <button id="clear-button" class="btn-danger">Clear Canvas</button>
+        <button id="eraser-button" class="btn-warning">Eraser</button>
+      </div>
+      <div class="color-picker" style="justify-content: center; margin-top: 10px;">
+        <div class="color-option selected" style="background-color: #000000;" data-color="#000000"></div>
+        <div class="color-option" style="background-color: #ff0000;" data-color="#ff0000"></div>
+        <div class="color-option" style="background-color: #00ff00;" data-color="#00ff00"></div>
+        <div class="color-option" style="background-color: #0000ff;" data-color="#0000ff"></div>
+        <div class="color-option" style="background-color: #ffff00;" data-color="#ffff00"></div>
+        <div class="color-option" style="background-color: #ff00ff;" data-color="#ff00ff"></div>
+        <div class="color-option" style="background-color: #ffffff;" data-color="#ffffff"></div>
+      </div>
+    </div>
+    
+    <!-- Calendar Tab -->
+    <div id="calendar" class="tab-content">
+      <h2>Calendar</h2>
+      <div class="calendar-header">
+        <button id="prev-month" class="btn-info">Prev</button>
+        <h3 id="month-year"></h3>
+        <button id="next-month" class="btn-info">Next</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <p id="modal-text"></p>
+      <button class="button" onclick="closeModal()">OK</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script>
+    // Tab functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        
+        // Hide all tab contents
+        tabContents.forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Deactivate all tab buttons
+        tabButtons.forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Show the selected tab content
+        document.getElementById(tabId).classList.add('active');
+        
+        // Activate the clicked button
+        button.classList.add('active');
+      });
+    });
+    
+    // Image Editor Functions
+    const fileUpload = document.getElementById('fileUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const videoPreview = document.getElementById('videoPreview');
+    const editor = document.getElementById('editor');
+    const overlayContainer = document.getElementById('overlayContainer');
+    const cropBox = document.getElementById('cropBox');
+    const cropWidthInput = document.getElementById('cropWidth');
+    const cropHeightInput = document.getElementById('cropHeight');
+    const resizeHandle = cropBox.querySelector('.resize-handle');
+    let mediaType = '', isCropping = false, isResizing = false;
+
+    fileUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        if (file.type.startsWith('image')) {
+          mediaType = 'image';
+          imagePreview.src = url;
+          imagePreview.style.display = 'block';
+          videoPreview.style.display = 'none';
+        } else if (file.type.startsWith('video')) {
+          mediaType = 'video';
+          videoPreview.src = url;
+          videoPreview.style.display = 'block';
+          imagePreview.style.display = 'none';
+        }
+        editor.style.display = 'flex';
+      }
+    });
+
+    function applyGrayscale(v) { applyFilter(`grayscale(${v})`); }
+    function applySepia(v) { applyFilter(`sepia(${v})`); }
+    function applyBrightness(v) { applyFilter(`brightness(${v})`); }
+    function applyContrast(v) { applyFilter(`contrast(${v})`); }
+    function applyBlur(v) { applyFilter(`blur(${v}px)`); }
+    function applyHueRotation(v) { applyFilter(`hue-rotate(${v}deg)`); }
+    function applySaturation(v) { applyFilter(`saturate(${v})`); }
+    function applyInvert(v) { applyFilter(`invert(${v})`); }
+
+    function applyFilter(filter) {
+      if (mediaType === 'image') { imagePreview.style.filter = filter; }
+      else if (mediaType === 'video') { videoPreview.style.filter = filter; }
+    }
+
+    function applyEffect(effect) {
+      let filter = '';
+      switch(effect) {
+        case 'vintage': filter = 'sepia(1) brightness(0.8) contrast(1.2)'; break;
+        case 'blur': filter = 'blur(5px)'; break;
+        case 'sepia': filter = 'sepia(1)'; break;
+        case 'grayscale': filter = 'grayscale(1)'; break;
+        case 'invert': filter = 'invert(1)'; break;
+        case 'saturate': filter = 'saturate(2)'; break;
+        case 'hue-rotate': filter = 'hue-rotate(90deg)'; break;
+        case 'shadow': filter = 'drop-shadow(8px 8px 10px rgba(0,0,0,0.5))'; break;
+        case 'glow': filter = 'drop-shadow(0 0 10px rgba(255,255,255,0.8))'; break;
+        default: filter = 'none';
+      }
+      if (mediaType === 'image') { imagePreview.style.filter = filter; }
+      else if (mediaType === 'video') { videoPreview.style.filter = filter; }
+    }
+
+    function startCrop() {
+      isCropping = true;
+      cropBox.style.display = 'block';
+      cropBox.style.width = '100px';
+      cropBox.style.height = '100px';
+      cropBox.style.left = '50px';
+      cropBox.style.top = '50px';
+      makeDraggable(cropBox);
+      resizeHandle.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        isResizing = true;
+        document.addEventListener('mousemove', resizeCropBox);
+        document.addEventListener('mouseup', stopResize);
+      });
+    }
+
+    function resizeCropBox(e) {
+      if (isResizing) {
+        const rect = cropBox.getBoundingClientRect();
+        cropBox.style.width = `${e.clientX - rect.left}px`;
+        cropBox.style.height = `${e.clientY - rect.top}px`;
+      }
+    }
+
+    function stopResize() {
+      isResizing = false;
+      document.removeEventListener('mousemove', resizeCropBox);
+      document.removeEventListener('mouseup', stopResize);
+    }
+
+    function setCropSize() {
+      const w = parseInt(cropWidthInput.value), h = parseInt(cropHeightInput.value);
+      if (w > 0 && h > 0) {
+        cropBox.style.width = `${w}px`;
+        cropBox.style.height = `${h}px`;
+      } else { alert('Enter valid width/height'); }
+    }
+
+    function applyCrop() {
+      if (isCropping) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const rect = cropBox.getBoundingClientRect();
+        const previewRect = document.getElementById('previewContainer').getBoundingClientRect();
+        const x = rect.left - previewRect.left, y = rect.top - previewRect.top, w = rect.width, h = rect.height;
+        canvas.width = w; canvas.height = h;
+        if (mediaType === 'image') {
+          ctx.drawImage(imagePreview, x, y, w, h, 0, 0, w, h);
+          imagePreview.src = canvas.toDataURL();
+        } else if (mediaType === 'video') {
+          ctx.drawImage(videoPreview, x, y, w, h, 0, 0, w, h);
+          videoPreview.poster = canvas.toDataURL();
+        }
+        cropBox.style.display = 'none';
+        isCropping = false;
+      }
+    }
+
+    function cancelCrop() { cropBox.style.display = 'none'; isCropping = false; }
+
+    function downloadMedia() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (mediaType === 'image') {
+        canvas.width = imagePreview.naturalWidth;
+        canvas.height = imagePreview.naturalHeight;
+        ctx.drawImage(imagePreview, 0, 0, canvas.width, canvas.height);
+      } else if (mediaType === 'video') {
+        canvas.width = videoPreview.videoWidth;
+        canvas.height = videoPreview.videoHeight;
+        ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+      }
+      const link = document.createElement('a');
+      link.download = `edited-${mediaType}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function makeDraggable(el) {
+      let isDragging = false, offsetX, offsetY;
+      el.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - el.getBoundingClientRect().left;
+        offsetY = e.clientY - el.getBoundingClientRect().top;
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          el.style.left = `${e.clientX - offsetX}px`;
+          el.style.top = `${e.clientY - offsetY}px`;
+        }
+      });
+      document.addEventListener('mouseup', () => { isDragging = false; });
+    }
+
+    function resetAll() {
+      fileUpload.value = '';
+      imagePreview.src = '#';
+      imagePreview.style.display = 'none';
+      videoPreview.src = '#';
+      videoPreview.style.display = 'none';
+      editor.style.display = 'none';
+      cropBox.style.display = 'none';
+      isCropping = false;
+      cropWidthInput.value = '';
+      cropHeightInput.value = '';
+    }
+    
+    function addText() {
+      // Text adding functionality would go here
+      alert('Text adding functionality would be implemented here');
+    }
+    
+    function addShape(shape) {
+      // Shape adding functionality would go here
+      alert(`Adding ${shape} functionality would be implemented here`);
+    }
+    
+    // Calculator 1 Functions
+    function appendDisplay1(v) { document.getElementById('display1').value += v; }
+    function clearDisplay1() { document.getElementById('display1').value = ''; }
+    function backspace1() { const d = document.getElementById('display1'); d.value = d.value.slice(0, -1); }
+    function calculate1() {
+      const d = document.getElementById('display1');
+      try { d.value = eval(d.value); } catch(e) { d.value = 'Error'; }
+    }
+    
+    // Calculator 2 Functions
+    function appendToDisplay2(v) { document.getElementById('display2').value += v; }
+    function clearDisplay2() { document.getElementById('display2').value = ''; }
+    function calculate2() {
+      const d = document.getElementById('display2');
+      try { d.value = eval(d.value); } catch(e) { d.value = 'Error'; }
+    }
+    
+    // Scientific Calculator Functions
+    let sciDisplay = document.getElementById('sciDisplay');
+    let sciModal = document.getElementById('modal');
+    let sciModalText = document.getElementById('modal-text');
+    let sciHistoryList = document.getElementById('history-list');
+    let sciOperand1 = '', sciOperator = '', sciOperand2 = '', sciIsOrOperation = false, sciHistory = [];
+
+    function sciClickButton(b) {
+      try {
+        switch(b) {
+          case '=':
+            sciOperand2 = sciDisplay.innerText;
+            if (sciOperator === '^') { sciDisplay.innerText = Math.pow(parseFloat(sciOperand1), parseFloat(sciOperand2)); }
+            else if (sciOperator === '%') { sciDisplay.innerText = parseFloat(sciOperand1) % parseFloat(sciOperand2); }
+            else if (sciOperator === '*' || sciOperator === '/' || sciOperator === '+' || sciOperator === '-' || sciOperator === '÷') {
+              if (sciOperator === '÷') sciOperator = '/';
+              sciDisplay.innerText = eval(sciOperand1 + sciOperator + sciOperand2);
+            }
+            sciOperand1 = sciDisplay.innerText;
+            sciOperator = '';
+            sciOperand2 = '';
+            sciIsOrOperation = false;
+            sciHistory.push(sciOperand1 + ' = ' + sciDisplay.innerText);
+            break;
+          case 'C': case 'AC':
+            sciDisplay.innerText = '0';
+            sciOperand1 = '';
+            sciOperator = '';
+            sciOperand2 = '';
+            sciIsOrOperation = false;
+            break;
+          case 'sin': sciDisplay.innerText = Math.sin(eval(sciDisplay.innerText)); break;
+          case 'cos': sciDisplay.innerText = Math.cos(eval(sciDisplay.innerText)); break;
+          case 'tan': sciDisplay.innerText = Math.tan(eval(sciDisplay.innerText)); break;
+          case 'asin': sciDisplay.innerText = Math.asin(eval(sciDisplay.innerText)); break;
+          case 'acos': sciDisplay.innerText = Math.acos(eval(sciDisplay.innerText)); break;
+          case 'atan': sciDisplay.innerText = Math.atan(eval(sciDisplay.innerText)); break;
+          case 'exp': sciDisplay.innerText = Math.exp(eval(sciDisplay.innerText)); break;
+          case 'ln': sciDisplay.innerText = Math.log(eval(sciDisplay.innerText)); break;
+          case 'log': sciDisplay.innerText = Math.log10(eval(sciDisplay.innerText)); break;
+          case 'x3': sciDisplay.innerText = Math.pow(eval(sciDisplay.innerText), 3); break;
+          case 'x2': sciDisplay.innerText = Math.pow(eval(sciDisplay.innerText), 2); break;
+          case '3√x': sciDisplay.innerText = Math.pow(eval(sciDisplay.innerText), 1/3); break;
+          case '√x': sciDisplay.innerText = Math.sqrt(eval(sciDisplay.innerText)); break;
+          case 'y√x': sciDisplay.innerText = Math.pow(eval(sciDisplay.innerText), 1/eval(sciDisplay.innerText)); break;
+          case '10x': sciDisplay.innerText = Math.pow(10, eval(sciDisplay.innerText)); break;
+          case '%': sciDisplay.innerText = eval(sciDisplay.innerText)/100; break;
+          case '1/x': sciDisplay.innerText = 1/eval(sciDisplay.innerText); break;
+          case 'n!':
+            let f = 1;
+            for (let i = 1; i <= eval(sciDisplay.innerText); i++) f *= i;
+            sciDisplay.innerText = f;
+            break;
+          case 'RND': sciDisplay.innerText = Math.random(); break;
+          case 'Back':
+            sciDisplay.innerText = sciDisplay.innerText.substring(0, sciDisplay.innerText.length - 1);
+            if (sciDisplay.innerText === '') sciDisplay.innerText = '0';
+            break;
+          default:
+            if (b === '+' || b === '-' || b === '*' || b === '/' || b === '^' || b === '%') {
+              sciOperator = b;
+              sciOperand1 = sciDisplay.innerText;
+              sciDisplay.innerText = '0';
+              sciIsOrOperation = false;
+            } else if (sciDisplay.innerText === '0' && b !== '.') {
+              sciDisplay.innerText = b;
+            } else {
+              sciDisplay.innerText += b;
+            }
+        }
+      } catch(e) {
+        showSciModal('Error: ' + e.message);
+        sciDisplay.innerText = '0';
+        sciOperand1 = '';
+        sciOperator = '';
+        sciOperand2 = '';
+        sciIsOrOperation = false;
+      }
+    }
+
+    function showSciModal(t) { sciModal.style.display = 'block'; sciModalText.innerText = t; }
+    function closeModal() { sciModal.style.display = 'none'; }
+    function showHistory() {
+      sciHistoryList.innerHTML = '';
+      for (let i = 0; i < sciHistory.length; i++) {
+        let li = document.createElement('li');
+        li.innerText = sciHistory[i];
+        sciHistoryList.appendChild(li);
+      }
+    }
+    
+    // Notes App Functions
+    document.addEventListener('DOMContentLoaded', loadNotes);
+    function addNote() {
+      const n = document.getElementById('noteInput');
+      const t = n.value.trim();
+      if (t === '') return;
+      saveNoteToLocalStorage({text: t, timestamp: new Date().toLocaleString()});
+      n.value = '';
+      loadNotes();
+    }
+
+    function saveNoteToLocalStorage(n) {
+      let notes = JSON.parse(localStorage.getItem('notes')) || [];
+      notes.push(n);
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
+
+    function loadNotes() {
+      const notes = JSON.parse(localStorage.getItem('notes')) || [];
+      const c = document.getElementById('notesList');
+      c.innerHTML = '';
+      notes.forEach((n, i) => {
+        const d = document.createElement('div');
+        d.className = 'note';
+        const t = document.createElement('div');
+        t.className = 'note-text';
+        t.textContent = n.text;
+        const ts = document.createElement('div');
+        ts.className = 'note-timestamp';
+        ts.textContent = `Created: ${n.timestamp}`;
+        const a = document.createElement('div');
+        a.className = 'note-actions';
+        const e = document.createElement('button');
+        e.className = 'edit-btn';
+        e.textContent = 'Edit';
+        e.onclick = () => editNote(i);
+        const del = document.createElement('button');
+        del.className = 'delete-btn';
+        del.textContent = 'Delete';
+        del.onclick = () => deleteNote(i);
+        a.appendChild(e);
+        a.appendChild(del);
+        d.appendChild(t);
+        d.appendChild(ts);
+        d.appendChild(a);
+        c.appendChild(d);
+      });
+    }
+
+    function editNote(i) {
+      const notes = JSON.parse(localStorage.getItem('notes')) || [];
+      const t = prompt('Edit your note:', notes[i].text);
+      if (t !== null && t.trim() !== '') {
+        notes[i].text = t.trim();
+        localStorage.setItem('notes', JSON.stringify(notes));
+        loadNotes();
+      }
+    }
+
+    function deleteNote(i) {
+      let notes = JSON.parse(localStorage.getItem('notes')) || [];
+      notes.splice(i, 1);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      loadNotes();
+    }
+    
+    // Translation App Functions
+    function translateText() {
+      const t = document.getElementById('inputText').value;
+      const l = document.getElementById('languageSelect').value;
+      const o = document.getElementById('outputText');
+      if (!t) { o.innerText = "Enter text to translate"; return; }
+      fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${l}&dt=t&q=${encodeURIComponent(t)}`)
+        .then(r => r.json()).then(d => { o.innerText = d[0][0][0]; }).catch(e => { o.innerText = "Translation failed"; console.error(e); });
+    }
+
+    function speakTranslatedText() {
+      const t = document.getElementById('outputText').innerText;
+      if (!t) { alert("No text to speak"); return; }
+      const s = window.speechSynthesis;
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = document.getElementById('languageSelect').value;
+      const v = s.getVoices();
+      const f = v.find(v => v.name.includes("Female") || v.name.includes("Woman"));
+      if (f) u.voice = f;
+      else console.warn("No female voice");
+      s.speak(u);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => { console.log("Voices loaded"); };
+    
+    // Binary Converter
+    const binaryNumberInput = document.getElementById('binary-number');
+    const convertButton = document.getElementById('convert-button');
+    const binaryResult = document.getElementById('binary-result');
+
+    function convertToBinary() {
+      const number = parseInt(binaryNumberInput.value);
+
+      if (isNaN(number)) {
+        binaryResult.textContent = 'Please enter a valid number!';
+        return;
+      }
+
+      const binary = number.toString(2);
+      binaryResult.textContent = `Binary: ${binary}`;
+    }
+
+    convertButton.addEventListener('click', convertToBinary);
+
+    // Age Calculator
+    const dobInput = document.getElementById('dob');
+    const calculateAgeButton = document.getElementById('calculate-button');
+    const ageResult = document.getElementById('age-result');
+
+    function calculateAge() {
+      const dob = new Date(dobInput.value);
+      const today = new Date();
+
+      if (isNaN(dob.getTime())) {
+        ageResult.textContent = 'Please enter a valid date of birth!';
+        return;
+      }
+
+      let ageYears = today.getFullYear() - dob.getFullYear();
+      let ageMonths = today.getMonth() - dob.getMonth();
+      let ageDays = today.getDate() - dob.getDate();
+
+      if (ageMonths < 0 || (ageMonths === 0 && ageDays < 0)) {
+        ageYears--;
+        ageMonths += 12;
+      }
+      if (ageDays < 0) {
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        ageDays += lastMonth.getDate();
+        ageMonths--;
+      }
+
+      ageResult.textContent = `Your age is ${ageYears} years, ${ageMonths} months, and ${ageDays} days.`;
+    }
+
+    calculateAgeButton.addEventListener('click', calculateAge);
+
+    // Stopwatch
+    const stopwatchDisplay = document.getElementById('stopwatch-display');
+    const startStopwatchButton = document.getElementById('start-button');
+    const stopStopwatchButton = document.getElementById('stop-button');
+    const resetStopwatchButton = document.getElementById('reset-button');
+
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+
+    function formatStopwatchTime(time) {
+      const hours = Math.floor(time / 3600000);
+      const minutes = Math.floor((time % 3600000) / 60000);
+      const seconds = Math.floor((time % 60000) / 1000);
+      const milliseconds = Math.floor(time % 1000);
+
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+    }
+
+    function startStopwatch() {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        stopwatchDisplay.textContent = formatStopwatchTime(elapsedTime);
+      }, 10);
+      startStopwatchButton.disabled = true;
+      stopStopwatchButton.disabled = false;
+    }
+
+    function stopStopwatch() {
+      clearInterval(timerInterval);
+      startStopwatchButton.disabled = false;
+      stopStopwatchButton.disabled = true;
+    }
+
+    function resetStopwatch() {
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      stopwatchDisplay.textContent = '00:00:00.000';
+      startStopwatchButton.disabled = false;
+      stopStopwatchButton.disabled = true;
+    }
+
+    startStopwatchButton.addEventListener('click', startStopwatch);
+    stopStopwatchButton.addEventListener('click', stopStopwatch);
+    resetStopwatchButton.addEventListener('click', resetStopwatch);
+
+    // Password Strength Checker
+    const passwordInput = document.getElementById('password-input');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    const criteria = {
+      length: document.getElementById('length'),
+      uppercase: document.getElementById('uppercase'),
+      lowercase: document.getElementById('lowercase'),
+      number: document.getElementById('number'),
+      special: document.getElementById('special'),
+    };
+
+    function checkPasswordStrength(password) {
+      let strength = 0;
+
+      if (password.length >= 8) {
+        strength += 1;
+        criteria.length.classList.add('valid');
+        criteria.length.classList.remove('invalid');
+      } else {
+        criteria.length.classList.add('invalid');
+        criteria.length.classList.remove('valid');
+      }
+
+      if (/[A-Z]/.test(password)) {
+        strength += 1;
+        criteria.uppercase.classList.add('valid');
+        criteria.uppercase.classList.remove('invalid');
+      } else {
+        criteria.uppercase.classList.add('invalid');
+        criteria.uppercase.classList.remove('valid');
+      }
+
+      if (/[a-z]/.test(password)) {
+        strength += 1;
+        criteria.lowercase.classList.add('valid');
+        criteria.lowercase.classList.remove('invalid');
+      } else {
+        criteria.lowercase.classList.add('invalid');
+        criteria.lowercase.classList.remove('valid');
+      }
+
+      if (/[0-9]/.test(password)) {
+        strength += 1;
+        criteria.number.classList.add('valid');
+        criteria.number.classList.remove('invalid');
+      } else {
+        criteria.number.classList.add('invalid');
+        criteria.number.classList.remove('valid');
+      }
+
+      if (/[^A-Za-z0-9]/.test(password)) {
+        strength += 1;
+        criteria.special.classList.add('valid');
+        criteria.special.classList.remove('invalid');
+      } else {
+        criteria.special.classList.add('invalid');
+        criteria.special.classList.remove('valid');
+      }
+
+      const strengthPercent = (strength / 5) * 100;
+      strengthBar.style.width = `${strengthPercent}%`;
+
+      if (strength <= 2) {
+        strengthBar.style.backgroundColor = 'red';
+        strengthText.textContent = 'Strength: Weak';
+      } else if (strength <= 4) {
+        strengthBar.style.backgroundColor = 'orange';
+        strengthText.textContent = 'Strength: Moderate';
+      } else {
+        strengthBar.style.backgroundColor = 'green';
+        strengthText.textContent = 'Strength: Strong';
+      }
+    }
+
+    passwordInput.addEventListener('input', () => {
+      const password = passwordInput.value;
+      checkPasswordStrength(password);
+    });
+
+    // QR Code Generator
+    const qrInput = document.getElementById('qr-input');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    qrInput.addEventListener('input', () => {
+      const text = qrInput.value.trim();
+      qrcodeDiv.innerHTML = "";
+
+      if (text) {
+        new QRCode(qrcodeDiv, {
+          text: text,
+          width: 200,
+          height: 200,
+        });
+      }
+    });
+    
+    // Timer
+    const timerDisplay = document.getElementById('timer-display');
+    const hoursInput = document.getElementById('hours');
+    const minutesInput = document.getElementById('minutes');
+    const secondsInput = document.getElementById('seconds');
+    const timerStartButton = document.getElementById('timer-start-button');
+    const timerResetButton = document.getElementById('timer-reset-button');
+    let countdown;
+
+    function startTimer() {
+      const hours = parseInt(hoursInput.value) || 0;
+      const minutes = parseInt(minutesInput.value) || 0;
+      const seconds = parseInt(secondsInput.value) || 0;
+
+      let totalTime = hours * 3600 + minutes * 60 + seconds;
+
+      if (totalTime <= 0) {
+        alert('Please enter a valid time!');
+        return;
+      }
+
+      timerStartButton.disabled = true;
+      timerResetButton.disabled = false;
+
+      countdown = setInterval(() => {
+        if (totalTime <= 0) {
+          clearInterval(countdown);
+          timerDisplay.textContent = '00:00:00';
+          timerStartButton.disabled = false;
+          timerResetButton.disabled = true;
+          alert('Time is up!');
+          return;
+        }
+
+        totalTime--;
+
+        const hoursRemaining = Math.floor(totalTime / 3600);
+        const minutesRemaining = Math.floor((totalTime % 3600) / 60);
+        const secondsRemaining = totalTime % 60;
+
+        timerDisplay.textContent = 
+          `${String(hoursRemaining).padStart(2, '0')}:${String(minutesRemaining).padStart(2, '0')}:${String(secondsRemaining).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      timerDisplay.textContent = '00:00:00';
+      hoursInput.value = '';
+      minutesInput.value = '';
+      secondsInput.value = '';
+      timerStartButton.disabled = false;
+      timerResetButton.disabled = true;
+    }
+
+    timerStartButton.addEventListener('click', startTimer);
+    timerResetButton.addEventListener('click', resetTimer);
+    
+    // Password Generator
+    const passwordDisplay = document.getElementById('password-display');
+    const pwdLengthInput = document.getElementById('pwd-length');
+    const pwdUppercaseInput = document.getElementById('pwd-uppercase');
+    const pwdNumbersInput = document.getElementById('pwd-numbers');
+    const pwdSymbolsInput = document.getElementById('pwd-symbols');
+    const generateButton = document.getElementById('generate-button');
+    const copyButton = document.getElementById('copy-button');
+
+    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+{}:"<>?[];,./`~';
+
+    function generatePassword() {
+      let characters = lowercaseLetters;
+      if (pwdUppercaseInput.checked) characters += uppercaseLetters;
+      if (pwdNumbersInput.checked) characters += numbers;
+      if (pwdSymbolsInput.checked) characters += symbols;
+
+      let password = '';
+      for (let i = 0; i < pwdLengthInput.value; i++) {
+        password += characters[Math.floor(Math.random() * characters.length)];
+      }
+      passwordDisplay.value = password;
+    }
+
+    function copyToClipboard() {
+      passwordDisplay.select();
+      document.execCommand('copy');
+      alert('Password copied to clipboard!');
+    }
+
+    generateButton.addEventListener('click', generatePassword);
+    copyButton.addEventListener('click', copyToClipboard);
+    
+    // Currency Converter
+    const amountInput = document.getElementById('amount');
+    const fromCurrencySelect = document.getElementById('from-currency');
+    const toCurrencySelect = document.getElementById('to-currency');
+    const currencyConvertButton = document.getElementById('currency-convert-button');
+    const currencyResult = document.getElementById('currency-result');
+
+    // Mock exchange rates (in a real app, you would fetch these from an API)
+    const exchangeRates = {
+      USD: { EUR: 0.85, GBP: 0.73, JPY: 110.15, INR: 74.50 },
+      EUR: { USD: 1.18, GBP: 0.86, JPY: 129.50, INR: 87.65 },
+      GBP: { USD: 1.37, EUR: 1.16, JPY: 150.75, INR: 102.30 },
+      JPY: { USD: 0.0091, EUR: 0.0077, GBP: 0.0066, INR: 0.68 },
+      INR: { USD: 0.013, EUR: 0.011, GBP: 0.0098, JPY: 1.47 }
+    };
+
+    function convertCurrency() {
+      const amount = parseFloat(amountInput.value);
+      const fromCurrency = fromCurrencySelect.value;
+      const toCurrency = toCurrencySelect.value;
+
+      if (isNaN(amount)) {
+        currencyResult.textContent = 'Please enter a valid amount!';
+        return;
+      }
+
+      if (fromCurrency === toCurrency) {
+        currencyResult.textContent = `${amount} ${fromCurrency} = ${amount} ${toCurrency}`;
+        return;
+      }
+
+      if (exchangeRates[fromCurrency] && exchangeRates[fromCurrency][toCurrency]) {
+        const exchangeRate = exchangeRates[fromCurrency][toCurrency];
+        const convertedAmount = (amount * exchangeRate).toFixed(2);
+        currencyResult.textContent = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
+      } else {
+        currencyResult.textContent = 'Exchange rate not available for these currencies.';
+      }
+    }
+
+    currencyConvertButton.addEventListener('click', convertCurrency);
+    
+    // Enhanced Drawing App
+    const canvas = document.getElementById('drawing-canvas');
+    const ctx = canvas.getContext('2d');
+    const clearButton = document.getElementById('clear-button');
+    const eraserButton = document.getElementById('eraser-button');
+    const colorSelector = document.getElementById('color-selector');
+    const currentColor = document.getElementById('current-color');
+    const brushSizeInput = document.getElementById('brush-size');
+    const colorOptions = document.querySelectorAll('.color-option');
+
+    // Set canvas size
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      canvas.width = Math.min(500, container.clientWidth - 40);
+      canvas.height = 400;
+      
+      // Set initial drawing styles
+      ctx.lineWidth = brushSizeInput.value;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = colorSelector.value;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Initial resize
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let isErasing = false;
+
+    // Set color from color picker
+    colorSelector.addEventListener('input', (e) => {
+      ctx.strokeStyle = e.target.value;
+      currentColor.style.backgroundColor = e.target.value;
+      updateSelectedColor(e.target.value);
+    });
+
+    // Set brush size
+    brushSizeInput.addEventListener('input', (e) => {
+      ctx.lineWidth = e.target.value;
+    });
+
+    // Color options click handler
+    colorOptions.forEach(option => {
+      option.addEventListener('click', (e) => {
+        const color = e.target.getAttribute('data-color');
+        ctx.strokeStyle = color;
+        currentColor.style.backgroundColor = color;
+        colorSelector.value = color;
+        updateSelectedColor(color);
+      });
+    });
+
+    function updateSelectedColor(color) {
+      colorOptions.forEach(option => {
+        option.classList.toggle(
+          'selected', 
+          option.getAttribute('data-color') === color
+        );
+      });
+    }
+
+    // Toggle eraser
+    eraserButton.addEventListener('click', () => {
+      isErasing = !isErasing;
+      eraserButton.classList.toggle('active', isErasing);
+      if (isErasing) {
+        ctx.strokeStyle = '#ffffff';
+        currentColor.style.backgroundColor = '#ffffff';
+      } else {
+        ctx.strokeStyle = colorSelector.value;
+        currentColor.style.backgroundColor = colorSelector.value;
+      }
+    });
+
+    // Drawing functions
+    function startDrawing(e) {
+      isDrawing = true;
+      [lastX, lastY] = getCoordinates(e);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      
+      const [x, y] = getCoordinates(e);
+      
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      
+      [lastX, lastY] = [x, y];
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    function getCoordinates(e) {
+      let x, y;
+      
+      if (e.type.includes('touch')) {
+        const rect = canvas.getBoundingClientRect();
+        x = e.touches[0].clientX - rect.left;
+        y = e.touches[0].clientY - rect.top;
+      } else {
+        x = e.offsetX;
+        y = e.offsetY;
+      }
+      
+      return [x, y];
+    }
+
+    function clearCanvas() {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Mouse event listeners
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    // Touch event listeners for mobile
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startDrawing(e);
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      draw(e);
+    });
+    
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      stopDrawing();
+    });
+
+    clearButton.addEventListener('click', clearCanvas);
+
+    // Calendar
+    const monthYearElement = document.getElementById('month-year');
+    const calendarGrid = document.getElementById('calendar-grid');
+    const prevMonthButton = document.getElementById('prev-month');
+    const nextMonthButton = document.getElementById('next-month');
+
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+
+    function renderCalendar() {
+      calendarGrid.innerHTML = '';
+
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December',
+      ];
+      monthYearElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDay = firstDay.getDay();
+
+      for (let i = 0; i < startingDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.classList.add('calendar-day', 'empty');
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.classList.add('calendar-day');
+        dayCell.textContent = day;
+
+        if (
+          day === currentDate.getDate() &&
+          currentMonth === currentDate.getMonth() &&
+          currentYear === currentDate.getFullYear()
+        ) {
+          dayCell.classList.add('today');
+        }
+
+        calendarGrid.appendChild(dayCell);
+      }
+    }
+
+    prevMonthButton.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonthButton.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+
+    // Initial render
+    renderCalendar();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ultimate Game Collection</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --secondary-color: #2196F3;
+      --danger-color: #f44336;
+      --dark-bg: #121212;
+      --darker-bg: #1a1a1a;
+      --light-text: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--dark-bg); color: var(--light-text); text-align: center; touch-action: manipulation; overflow-x: hidden; line-height: 1.6; }
+    
+    .menu { display: flex; justify-content: center; background-color: var(--darker-bg); padding: 15px 0; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 8px; }
+    .menu-button { background-color: #333; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 16px; transition: var(--transition); font-weight: 600; min-width: 120px; }
+    .menu-button:hover { background-color: #444; transform: translateY(-2px); }
+    .menu-button.active { background-color: var(--primary-color); box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
+    
+    .game-container { width: 95%; max-width: 600px; margin: 20px auto; padding: 20px; background-color: var(--card-bg); border-radius: 15px; box-shadow: var(--shadow); display: none; animation: fadeIn 0.5s ease-out; }
+    .game-container.active { display: block; }
+    .game-container h1 { margin-bottom: 20px; color: var(--primary-color); font-size: 2rem; }
+    .back-btn { display: block; width: 80%; max-width: 200px; margin: 20px auto 0; padding: 12px 25px; font-size: 1rem; font-weight: 600; cursor: pointer; background-color: var(--danger-color); color: white; border: none; border-radius: 25px; transition: var(--transition); }
+    .back-btn:hover { background-color: #d32f2f; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3); }
+    
+    /* Tic Tac Toe */
+    .tic-tac-toe .board { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 8px; margin: 25px auto; max-width: 300px; }
+    .tic-tac-toe .cell { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 3rem; border: 2px solid var(--primary-color); cursor: pointer; color: white; background-color: rgba(76, 175, 80, 0.1); border-radius: 10px; transition: var(--transition); }
+    .tic-tac-toe .cell:hover:not(.taken) { background-color: rgba(76, 175, 80, 0.2); transform: scale(1.05); }
+    .tic-tac-toe .cell.taken { pointer-events: none; }
+    .tic-tac-toe .status { margin: 20px 0; font-size: 1.5rem; font-weight: 600; min-height: 30px; }
+    .tic-tac-toe .game-controls { margin: 25px 0; display: flex; justify-content: center; gap: 15px; }
+    .restart-btn { background-color: var(--secondary-color); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+    .restart-btn:hover { background-color: #0b7dda; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3); }
+    
+    /* Click Game */
+    .click-game #click-button { width: 200px; height: 200px; border-radius: 50%; font-size: 1.5rem; font-weight: bold; cursor: pointer; background-color: var(--secondary-color); color: white; border: none; transition: all 0.2s; box-shadow: 0 6px 0 #0b5ed7, 0 8px 15px rgba(0,0,0,0.2); margin: 20px auto; display: flex; align-items: center; justify-content: center; }
+    .click-game #click-button:active { transform: translateY(4px); box-shadow: 0 2px 0 #0b5ed7; }
+    .click-game #timer, .click-game #score { margin-top: 20px; font-size: 1.5rem; font-weight: 600; }
+    
+    /* Fruit Game */
+    .fruit-game { width: 100%; height: 70vh; max-height: 500px; min-height: 400px; position: relative; overflow: hidden; background: linear-gradient(to bottom, #87CEEB, #1E90FF); border-radius: 15px; }
+    .fruit-game h1 { position: absolute; top: 10px; left: 0; right: 0; margin: 0; padding: 10px; font-size: 1.8rem; color: white; background-color: rgba(0,0,0,0.4); z-index: 10; }
+    .fruit-game #basket { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 100px; height: 50px; background: linear-gradient(to bottom, #8B4513, #A0522D); border-radius: 10px 10px 0 0; z-index: 5; transition: left 0.1s ease-out; }
+    .fruit-game .falling-object { position: absolute; width: 40px; height: 40px; text-align: center; line-height: 40px; font-size: 30px; user-select: none; z-index: 4; transition: transform 0.1s; }
+    .fruit-game #score, .fruit-game #missed, .fruit-game #level { position: absolute; font-size: 1.5rem; color: white; text-shadow: 2px 2px 4px black; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
+    .fruit-game #score { top: 60px; left: 20px; }
+    .fruit-game #missed { top: 100px; left: 20px; }
+    .fruit-game #level { top: 140px; left: 20px; }
+    .fruit-game #game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: white; text-shadow: 3px 3px 6px black; display: none; z-index: 20; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 15px; width: 80%; max-width: 400px; }
+    .mobile-controls { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 30px; z-index: 10; }
+    .mobile-btn { width: 70px; height: 70px; background-color: rgba(0,0,0,0.6); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; user-select: none; cursor: pointer; transition: var(--transition); }
+    .mobile-btn:active { transform: scale(0.9); background-color: rgba(0,0,0,0.8); }
+    
+    /* Memory Game */
+    .memory-game .game-board { display: grid; gap: 15px; justify-content: center; margin: 25px auto; perspective: 1000px; }
+    .memory-game .card { width: 80px; height: 80px; background: linear-gradient(145deg, #555, #333); display: flex; justify-content: center; align-items: center; font-size: 2em; cursor: pointer; border-radius: 10px; transition: transform 0.5s, background 0.3s; transform-style: preserve-3d; }
+    .memory-game .card.flipped { transform: rotateY(180deg); background: linear-gradient(145deg, #f5f5f5, #e0e0e0); }
+    .memory-game .card.matched { background: linear-gradient(145deg, #4CAF50, #45a049); transform: rotateY(180deg); cursor: default; }
+    .memory-game #memoryLevel { font-size: 1.5rem; margin: 15px 0; font-weight: 600; }
+    
+    /* Avoid Game */
+    .avoid-game { width: 100%; height: 70vh; max-height: 500px; min-height: 400px; position: relative; overflow: hidden; background: linear-gradient(to bottom, #87CEEB, #4682B4); border-radius: 15px; }
+    .avoid-game #player { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: radial-gradient(circle, #FF6347, #CD5C5C); border-radius: 50%; z-index: 5; transition: left 0.1s ease-out; }
+    .avoid-game .obstacle { position: absolute; width: 50px; height: 50px; background: linear-gradient(145deg, #222, #444); border-radius: 10px; z-index: 4; }
+    .avoid-game #avoidScore { position: absolute; top: 60px; left: 20px; font-size: 1.5rem; color: white; text-shadow: 2px 2px 4px black; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
+    .avoid-game #avoidGameOver { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: white; text-shadow: 3px 3px 6px black; display: none; z-index: 20; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 15px; width: 80%; max-width: 400px; }
+    
+    /* Snake Game */
+    #snake-canvas { border: 2px solid var(--primary-color); background-color: #000; margin: 20px auto; display: block; }
+    .speed-control { display: flex; align-items: center; margin-bottom: 15px; width: 100%; max-width: 400px; }
+    .speed-slider { flex-grow: 1; height: 10px; -webkit-appearance: none; background: #333; border-radius: 5px; outline: none; }
+    .speed-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 25px; height: 25px; background: var(--primary-color); border-radius: 50%; cursor: pointer; transition: var(--transition); }
+    
+    /* Guess Game */
+    .guess-container { background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; width: 100%; margin: 0 auto; }
+    .guessField { padding: 15px; width: 80%; max-width: 300px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.2rem; outline: none; transition: var(--transition); text-align: center; }
+    .guessSubmit { padding: 15px 30px; background: var(--secondary-color); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 15px; }
+    
+    /* Flappy Bird */
+    #flappy-game { position: relative; width: 100%; height: 70vh; max-height: 500px; min-height: 400px; background: linear-gradient(to bottom, #70c5ce, #4682B4); overflow: hidden; border-radius: 15px; }
+    #flappy-bird { position: absolute; top: 50%; left: 50px; width: 50px; height: 50px; background: radial-gradient(circle, yellow, #FFD700); border-radius: 50%; z-index: 5; transition: transform 0.1s; }
+    .flappy-pipe { position: absolute; width: 80px; background: linear-gradient(to bottom, #006400, #228B22); z-index: 4; }
+    #flappy-score { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 28px; color: white; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
+    #flappy-game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 15px; color: white; display: none; z-index: 20; width: 80%; max-width: 400px; }
+    
+    /* Breakout */
+    .breakout-container { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 100%; }
+    .score-box { background: var(--secondary-color); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; color: #fff; width: 100%; max-width: 400px; }
+    #breakoutCanvas { background: #111; display: block; border: 2px solid var(--primary-color); border-radius: 15px; max-width: 100%; height: auto; }
+    .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 2.5rem; text-align: center; display: none; background: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 15px; width: 80%; max-width: 400px; z-index: 20; }
+    
+    /* Dot Game */
+    .dot-container { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; height: 70vh; max-height: 500px; min-height: 400px; text-align: center; position: relative; }
+    #dot { width: 40px; height: 40px; background: radial-gradient(circle, red, #B22222); border-radius: 50%; position: absolute; cursor: pointer; transition: transform 0.1s; z-index: 5; }
+    .dot-score, .dot-timer { font-size: 24px; font-weight: 600; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
+    .dot-restart-button { padding: 12px 25px; font-size: 1.2rem; font-weight: 600; cursor: pointer; background-color: var(--primary-color); color: white; border: none; border-radius: 25px; transition: var(--transition); margin-top: 20px; display: none; }
+    
+    @media (max-width: 768px) {
+      .menu { padding: 10px; gap: 5px; }
+      .menu-button { padding: 8px 15px; font-size: 14px; min-width: 100px; }
+      .game-container { padding: 15px; width: 98%; }
+      .fruit-game, .avoid-game, #flappy-game { height: 60vh; min-height: 350px; }
+      .mobile-btn { width: 60px; height: 60px; font-size: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .menu { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 15px; }
+      .fruit-game, .avoid-game, #flappy-game { height: 55vh; min-height: 300px; }
+      .mobile-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <button class="menu-button active" data-game="ticTacToe">Tic Tac Toe</button>
+    <button class="menu-button" data-game="clickGame">Click Frenzy</button>
+    <button class="menu-button" data-game="fruitGame">Fruit Catcher</button>
+    <button class="menu-button" data-game="memoryGame">Memory Match</button>
+    <button class="menu-button" data-game="avoidGame">Dodge Boxes</button>
+    <button class="menu-button" data-game="snakeGame">Snake</button>
+    <button class="menu-button" data-game="guessGame">Number Guess</button>
+    <button class="menu-button" data-game="flappyGame">Flappy Bird</button>
+    <button class="menu-button" data-game="breakoutGame">Breakout</button>
+    <button class="menu-button" data-game="dotGame">Dot Chase</button>
+  </div>
+  
+  <!-- Games containers -->
+  <div class="game-container tic-tac-toe" id="ticTacToe">
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="tictactoeBoard"></div>
+    <div class="status" id="status">Player X's turn</div>
+    <div class="game-controls">
+      <button class="back-btn restart-btn" onclick="resetTicTacToe()">Restart</button>
+      <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+    </div>
+  </div>
+  
+  <div class="game-container click-game" id="clickGame">
+    <h1>Click Frenzy</h1>
+    <p>Click the button as many times as you can in 10 seconds!</p>
+    <button id="click-button">CLICK ME!</button>
+    <div id="timer">Time left: 10 seconds</div>
+    <div id="score">Score: 0</div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+  
+  <div class="game-container fruit-game" id="fruitGame">
+    <h1>Fruit Catcher</h1>
+    <div id="basket"></div>
+    <div id="score">Score: 0</div>
+    <div id="missed">Missed: 0</div>
+    <div id="level">Level: 1</div>
+    <div id="game-over"><h1>Game Over!</h1><p>Final Score: <span id="finalScore">0</span></p><button onclick="initFruitGame()">Play Again</button></div>
+    <div class="mobile-controls">
+      <div class="mobile-btn" id="fruit-left-btn">←</div>
+      <div class="mobile-btn" id="fruit-right-btn">→</div>
+    </div>
+    <button class="back-btn" onclick="showMenu()" style="position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);">Back to Menu</button>
+  </div>
+  
+  <div class="game-container memory-game" id="memoryGame">
+    <h1>Memory Match</h1>
+    <p>Level: <span id="memoryLevel">1</span> - Find all matching pairs!</p>
+    <div class="game-board" id="memoryBoard"></div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+  
+  <div class="game-container avoid-game" id="avoidGame">
+    <h1>Dodge Boxes</h1>
+    <div id="player"></div>
+    <div id="avoidScore">Score: 0</div>
+    <div id="avoidGameOver"><h1>Game Over!</h1><p>Final Score: <span id="finalAvoidScore">0</span></p><button onclick="initAvoidGame()">Play Again</button></div>
+    <div class="mobile-controls">
+      <div class="mobile-btn" id="avoid-left-btn">←</div>
+      <div class="mobile-btn" id="avoid-right-btn">→</div>
+    </div>
+    <button class="back-btn" onclick="showMenu()" style="position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);">Back to Menu</button>
+  </div>
+
+  <div class="game-container" id="snakeGame">
+    <h1>Snake Game</h1>
+    <canvas id="snake-canvas" width="400" height="400"></canvas>
+    <div class="snake-controls">
+      <div class="speed-control">
+        <span class="speed-label">Game Speed:</span>
+        <input type="range" min="50" max="300" value="100" class="speed-slider" id="speedSlider">
+        <span class="speed-value" id="speedValue">100</span>
+      </div>
+    </div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+
+  <div class="game-container" id="guessGame">
+    <div class="guess-container">
+      <h1>Number Guess</h1>
+      <p>We've selected a random number between 1 and 100. Try to guess it in 10 turns or fewer.</p>
+      <input type="number" id="guessField" class="guessField" placeholder="Enter your guess" min="1" max="100" required>
+      <button class="guessSubmit">Submit Guess</button>
+      <div class="resultParas">
+        <p class="guesses"></p>
+        <p class="lastResult"></p>
+        <p class="lowOrHi"></p>
+      </div>
+    </div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+
+  <div class="game-container" id="flappyGame">
+    <h1>Flappy Bird</h1>
+    <div id="flappy-game">
+      <div id="flappy-bird"></div>
+      <div id="flappy-score">0</div>
+      <div id="flappy-game-over"><h1>Game Over!</h1><p>Your Score: <span id="flappy-final-score">0</span></p><button id="flappy-restart-button">Restart</button></div>
+    </div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+
+  <div class="game-container breakout-container" id="breakoutGame">
+    <h1>Breakout</h1>
+    <div class="score-box">
+      <h1>Breakout</h1>
+      <p>Score: <span id="breakoutScore">0</span></p>
+      <p>Level: <span id="breakoutLevel">1</span> | Target: <span id="breakoutTarget">4</span></p>
+      <p>Lives: <span id="breakoutLives">3</span></p>
+    </div>
+    <canvas id="breakoutCanvas" width="800" height="600"></canvas>
+    <div class="game-over" id="breakoutGameOver"><h1 id="breakoutGameOverText">Game Over!</h1><p>Final Score: <span id="breakoutFinalScore">0</span></p><button class="restart-button" id="breakoutRestartButton">Restart Game</button></div>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+
+  <div class="game-container dot-container" id="dotGame">
+    <h1 class="dot-game-title">Dot Chase</h1>
+    <p class="dot-instructions">Click the red dot as many times as you can in 10 seconds!</p>
+    <div id="dot"></div>
+    <div class="dot-score" id="dotScore">Score: 0</div>
+    <div class="dot-timer" id="dotTimer">Time left: 10</div>
+    <button class="dot-restart-button" id="dotRestartButton">Restart Game</button>
+    <button class="back-btn" onclick="showMenu()">Back to Menu</button>
+  </div>
+
+  <script>
+    let activeGame = null;
+    const gameIntervals = {};
+    
+    document.addEventListener('touchmove', function(e) {
+      if (e.target.classList.contains('mobile-btn')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    function showMenu() {
+      document.querySelectorAll('.game-container').forEach(game => game.classList.remove('active'));
+      for (const intervalId in gameIntervals) {
+        clearInterval(gameIntervals[intervalId]);
+        delete gameIntervals[intervalId];
+      }
+      activeGame = null;
+    }
+    
+    const menuButtons = document.querySelectorAll('.menu-button');
+    menuButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        menuButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        const gameId = button.dataset.game;
+        showMenu();
+        document.getElementById(gameId).classList.add('active');
+        activeGame = gameId;
+        switch(gameId) {
+          case 'ticTacToe': initTicTacToe(); break;
+          case 'clickGame': initClickGame(); break;
+          case 'fruitGame': initFruitGame(); break;
+          case 'memoryGame': initMemoryGame(); break;
+          case 'avoidGame': initAvoidGame(); break;
+          case 'snakeGame': startSnakeGame(); break;
+          case 'guessGame': resetGuessGame(); break;
+          case 'flappyGame': startFlappyGame(); break;
+          case 'breakoutGame': startBreakoutGame(); break;
+          case 'dotGame': startDotGame(); break;
+        }
+      });
+    });
+    
+    // Tic Tac Toe
+    let ticTacToeGameActive = true, ticTacToeCurrentPlayer = "X", ticTacToeGameBoard = ["", "", "", "", "", "", "", "", ""];
+    function initTicTacToe() {
+      ticTacToeGameActive = true;
+      ticTacToeCurrentPlayer = "X";
+      ticTacToeGameBoard = ["", "", "", "", "", "", "", "", ""];
+      document.getElementById("status").innerText = "Player X's turn";
+      createTicTacToeBoard();
+    }
+    function createTicTacToeBoard() {
+      const board = document.getElementById("tictactoeBoard");
+      board.innerHTML = "";
+      ticTacToeGameBoard.forEach((cell, index) => {
+        const cellElement = document.createElement("div");
+        cellElement.classList.add("cell");
+        cellElement.dataset.index = index;
+        cellElement.innerText = cell;
+        if (cell) cellElement.classList.add("taken");
+        cellElement.addEventListener("click", handleTicTacToeMove);
+        board.appendChild(cellElement);
+      });
+    }
+    function handleTicTacToeMove(event) {
+      if (!ticTacToeGameActive) return;
+      const index = event.target.dataset.index;
+      if (!ticTacToeGameBoard[index]) {
+        ticTacToeGameBoard[index] = ticTacToeCurrentPlayer;
+        ticTacToeCurrentPlayer = ticTacToeCurrentPlayer === "X" ? "O" : "X";
+        document.getElementById("status").innerText = `Player ${ticTacToeCurrentPlayer}'s turn`;
+        checkTicTacToeWinner();
+        createTicTacToeBoard();
+      }
+    }
+    function checkTicTacToeWinner() {
+      const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
+      for (const combo of winningCombinations) {
+        const [a, b, c] = combo;
+        if (ticTacToeGameBoard[a] && ticTacToeGameBoard[a] === ticTacToeGameBoard[b] && ticTacToeGameBoard[a] === ticTacToeGameBoard[c]) {
+          document.getElementById("status").innerText = `Player ${ticTacToeGameBoard[a]} wins!`;
+          ticTacToeGameActive = false;
+          setTimeout(resetTicTacToe, 2000);
+          return;
+        }
+      }
+      if (!ticTacToeGameBoard.includes("")) {
+        document.getElementById("status").innerText = "It's a draw!";
+        ticTacToeGameActive = false;
+        setTimeout(resetTicTacToe, 2000);
+      }
+    }
+    function resetTicTacToe() { initTicTacToe(); }
+    
+    // Click Game
+    let clickGameScore = 0, clickGameTimeLeft = 10;
+    function initClickGame() {
+      const clickButton = document.getElementById('click-button');
+      const timerDisplay = document.getElementById('timer');
+      const scoreDisplay = document.getElementById('score');
+      clickGameScore = 0;
+      clickGameTimeLeft = 10;
+      scoreDisplay.textContent = `Score: ${clickGameScore}`;
+      timerDisplay.textContent = `Time left: ${clickGameTimeLeft} seconds`;
+      clickButton.disabled = false;
+      clickButton.style.transform = 'translateY(0)';
+      clickButton.style.boxShadow = '0 6px 0 #0b5ed7, 0 8px 15px rgba(0,0,0,0.2)';
+      if (gameIntervals.clickGameTimer) clearInterval(gameIntervals.clickGameTimer);
+      gameIntervals.clickGameTimer = setInterval(() => {
+        clickGameTimeLeft--;
+        timerDisplay.textContent = `Time left: ${clickGameTimeLeft} seconds`;
+        if (clickGameTimeLeft <= 0) {
+          clearInterval(gameIntervals.clickGameTimer);
+          clickButton.disabled = true;
+          setTimeout(() => {
+            scoreDisplay.style.transform = 'scale(1.2)';
+            scoreDisplay.style.color = '#4CAF50';
+            setTimeout(() => scoreDisplay.style.transform = 'scale(1)', 500);
+          }, 100);
+        }
+      }, 1000);
+      clickButton.onclick = () => {
+        if (clickGameTimeLeft <= 0) return;
+        clickGameScore++;
+        scoreDisplay.textContent = `Score: ${clickGameScore}`;
+        clickButton.style.transform = 'translateY(4px)';
+        clickButton.style.boxShadow = '0 2px 0 #0b5ed7';
+        setTimeout(() => {
+          clickButton.style.transform = 'translateY(0)';
+          clickButton.style.boxShadow = '0 6px 0 #0b5ed7, 0 8px 15px rgba(0,0,0,0.2)';
+        }, 100);
+      };
+    }
+    
+    // Fruit Game
+    let fruitGameScore = 0, fruitGameMissed = 0, fruitGameLevel = 1, fruitGameActive = true, fruitGameBasketLeft = 50, fruitMoveDirection = 0;
+    const fruits = [
+      { emoji: '🍎', points: 1, color: '#FF0000' },
+      { emoji: '🍌', points: 2, color: '#FFD700' },
+      { emoji: '🍉', points: 3, color: '#FF6347' },
+      { emoji: '🍇', points: 1, color: '#9370DB' },
+      { emoji: '🍍', points: 2, color: '#FFA500' },
+      { emoji: '🍓', points: 1, color: '#FF1493' },
+      { emoji: '🍊', points: 1, color: '#FF8C00' },
+      { emoji: '🍋', points: 2, color: '#FFFF00' }
+    ];
+    let fruitGameBaseSpeed = 2;
+    function initFruitGame() {
+      const basket = document.getElementById('basket');
+      const gameContainer = document.getElementById('fruitGame');
+      const scoreDisplay = document.getElementById('score');
+      const missedDisplay = document.getElementById('missed');
+      const levelDisplay = document.getElementById('level');
+      const gameOverDisplay = document.getElementById('game-over');
+      const finalScoreDisplay = document.getElementById('finalScore');
+      const leftBtn = document.getElementById('fruit-left-btn');
+      const rightBtn = document.getElementById('fruit-right-btn');
+      fruitGameScore = 0;
+      fruitGameMissed = 0;
+      fruitGameLevel = 1;
+      fruitGameActive = true;
+      fruitGameBaseSpeed = 2;
+      fruitGameBasketLeft = 50;
+      scoreDisplay.textContent = `Score: ${fruitGameScore}`;
+      missedDisplay.textContent = `Missed: ${fruitGameMissed}`;
+      levelDisplay.textContent = `Level: ${fruitGameLevel}`;
+      gameOverDisplay.style.display = 'none';
+      document.querySelectorAll('.falling-object').forEach(object => object.remove());
+      basket.style.left = `${fruitGameBasketLeft}%`;
+      if (gameIntervals.fruitGameInterval) clearInterval(gameIntervals.fruitGameInterval);
+      if (gameIntervals.basketMoveInterval) clearInterval(gameIntervals.basketMoveInterval);
+      document.onkeydown = (event) => {
+        if (!fruitGameActive || activeGame !== 'fruitGame') return;
+        if (event.key === 'ArrowLeft') fruitMoveDirection = -1;
+        else if (event.key === 'ArrowRight') fruitMoveDirection = 1;
+      };
+      document.onkeyup = (event) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') fruitMoveDirection = 0;
+      };
+      leftBtn.addEventListener('touchstart', () => fruitMoveDirection = -1);
+      leftBtn.addEventListener('touchend', () => fruitMoveDirection = 0);
+      rightBtn.addEventListener('touchstart', () => fruitMoveDirection = 1);
+      rightBtn.addEventListener('touchend', () => fruitMoveDirection = 0);
+      leftBtn.addEventListener('mousedown', () => fruitMoveDirection = -1);
+      leftBtn.addEventListener('mouseup', () => fruitMoveDirection = 0);
+      rightBtn.addEventListener('mousedown', () => fruitMoveDirection = 1);
+      rightBtn.addEventListener('mouseup', () => fruitMoveDirection = 0);
+      gameIntervals.basketMoveInterval = setInterval(() => {
+        if (fruitMoveDirection !== 0 && fruitGameActive) {
+          fruitGameBasketLeft += fruitMoveDirection * 3;
+          if (fruitGameBasketLeft < 0) fruitGameBasketLeft = 0;
+          if (fruitGameBasketLeft > 100) fruitGameBasketLeft = 100;
+          basket.style.left = `${fruitGameBasketLeft}%`;
+        }
+      }, 16);
+      gameIntervals.fruitGameInterval = setInterval(createFallingObject, 1000);
+      function createFallingObject() {
+        if (!fruitGameActive || activeGame !== 'fruitGame') return;
+        const randomFruit = fruits[Math.floor(Math.random() * fruits.length)];
+        const object = document.createElement('div');
+        object.classList.add('falling-object');
+        object.textContent = randomFruit.emoji;
+        object.style.left = `${Math.random() * 90}%`;
+        object.style.color = randomFruit.color;
+        gameContainer.appendChild(object);
+        let objectTop = 0;
+        const fallSpeed = Math.random() * fruitGameBaseSpeed + fruitGameLevel;
+        const fallInterval = setInterval(() => {
+          if (!fruitGameActive || activeGame !== 'fruitGame') {
+            clearInterval(fallInterval);
+            gameContainer.removeChild(object);
+            return;
+          }
+          objectTop += fallSpeed;
+          object.style.top = `${objectTop}px`;
+          if (objectTop + 40 >= gameContainer.offsetHeight - 60 &&
+              parseInt(object.style.left) >= fruitGameBasketLeft - 10 &&
+              parseInt(object.style.left) <= fruitGameBasketLeft + 10) {
+            fruitGameScore += randomFruit.points;
+            scoreDisplay.textContent = `Score: ${fruitGameScore}`;
+            scoreDisplay.style.transform = 'scale(1.2)';
+            setTimeout(() => scoreDisplay.style.transform = 'scale(1)', 200);
+            const catchEffect = document.createElement('div');
+            catchEffect.style.position = 'absolute';
+            catchEffect.style.left = object.style.left;
+            catchEffect.style.top = `${gameContainer.offsetHeight - 60}px`;
+            catchEffect.style.fontSize = '30px';
+            catchEffect.style.color = 'gold';
+            catchEffect.textContent = `+${randomFruit.points}`;
+            gameContainer.appendChild(catchEffect);
+            setTimeout(() => {
+              catchEffect.style.top = `${parseInt(catchEffect.style.top) - 30}px`;
+              catchEffect.style.opacity = '0';
+            }, 10);
+            setTimeout(() => gameContainer.removeChild(catchEffect), 500);
+            gameContainer.removeChild(object);
+            clearInterval(fallInterval);
+            if (fruitGameScore >= fruitGameLevel * 10) {
+              fruitGameLevel++;
+              levelDisplay.textContent = `Level: ${fruitGameLevel}`;
+              fruitGameBaseSpeed += 0.5;
+              levelDisplay.style.transform = 'scale(1.3)';
+              levelDisplay.style.color = 'gold';
+              setTimeout(() => {
+                levelDisplay.style.transform = 'scale(1)';
+                levelDisplay.style.color = 'white';
+              }, 500);
+              if (fruitGameLevel > 10) {
+                fruitGameActive = false;
+                gameOverDisplay.querySelector('h1').textContent = "You Win!";
+                finalScoreDisplay.textContent = fruitGameScore;
+                gameOverDisplay.style.display = 'block';
+              }
+            }
+          }
+          if (objectTop >= gameContainer.offsetHeight) {
+            fruitGameMissed++;
+            missedDisplay.textContent = `Missed: ${fruitGameMissed}`;
+            missedDisplay.style.transform = 'scale(1.2)';
+            missedDisplay.style.color = 'red';
+            setTimeout(() => {
+              missedDisplay.style.transform = 'scale(1)';
+              missedDisplay.style.color = 'white';
+            }, 200);
+            gameContainer.removeChild(object);
+            clearInterval(fallInterval);
+            if (fruitGameMissed >= 5) {
+              fruitGameActive = false;
+              gameOverDisplay.querySelector('h1').textContent = "Game Over!";
+              finalScoreDisplay.textContent = fruitGameScore;
+              gameOverDisplay.style.display = 'block';
+            }
+          }
+        }, 20);
+      }
+      gameContainer.onclick = (e) => {
+        if (e.target.classList.contains('back-btn') || e.target.classList.contains('mobile-btn')) return;
+        if (!fruitGameActive) initFruitGame();
+      };
+    }
+    
+    // Memory Game
+    let memoryCurrentLevel = 1, memoryFlippedCards = [], memoryMatchedCards = [], memoryCards = [], memoryCanFlip = true;
+    function initMemoryGame() {
+      const board = document.getElementById('memoryBoard');
+      const levelText = document.getElementById('memoryLevel');
+      memoryCurrentLevel = 1;
+      memoryFlippedCards = [];
+      memoryMatchedCards = [];
+      memoryCanFlip = true;
+      levelText.textContent = memoryCurrentLevel;
+      startMemoryLevel();
+    }
+    function startMemoryLevel() {
+      const board = document.getElementById('memoryBoard');
+      const levelText = document.getElementById('memoryLevel');
+      memoryCards = generateMemoryCards(memoryCurrentLevel);
+      memoryFlippedCards = [];
+      memoryMatchedCards = [];
+      memoryCanFlip = true;
+      board.innerHTML = '';
+      levelText.textContent = memoryCurrentLevel;
+      renderMemoryBoard();
+    }
+    function generateMemoryCards(level) {
+      const numPairs = level + 1;
+      const emojiSet = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🦄', '🐔', '🐧', '🐦', '🐤'];
+      let cardArray = [];
+      for (let i = 0; i < numPairs; i++) {
+        const emoji = emojiSet[i % emojiSet.length];
+        cardArray.push(emoji, emoji);
+      }
+      cardArray.sort(() => 0.5 - Math.random());
+      return cardArray;
+    }
+    function renderMemoryBoard() {
+      const board = document.getElementById('memoryBoard');
+      const numColumns = Math.ceil(Math.sqrt(memoryCards.length));
+      board.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+      memoryCards.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('card');
+        cardElement.dataset.index = index;
+        cardElement.dataset.value = card;
+        cardElement.addEventListener('click', flipMemoryCard);
+        board.appendChild(cardElement);
+      });
+    }
+    function flipMemoryCard(e) {
+      const clickedCard = e.target;
+      if (!memoryCanFlip || memoryFlippedCards.length === 2 || clickedCard.classList.contains('flipped') || memoryMatchedCards.includes(clickedCard.dataset.index)) return;
+      clickedCard.classList.add('flipped');
+      clickedCard.textContent = clickedCard.dataset.value;
+      memoryFlippedCards.push({ element: clickedCard, index: clickedCard.dataset.index });
+      if (memoryFlippedCards.length === 2) {
+        memoryCanFlip = false;
+        setTimeout(checkMemoryMatch, 1000);
+      }
+    }
+    function checkMemoryMatch() {
+      const [first, second] = memoryFlippedCards;
+      if (first.element.dataset.value === second.element.dataset.value) {
+        first.element.classList.add('matched');
+        second.element.classList.add('matched');
+        memoryMatchedCards.push(first.index, second.index);
+        first.element.style.transform = 'scale(1.1)';
+        second.element.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          first.element.style.transform = 'scale(1)';
+          second.element.style.transform = 'scale(1)';
+        }, 200);
+      } else {
+        first.element.classList.remove('flipped');
+        second.element.classList.remove('flipped');
+        first.element.textContent = '';
+        second.element.textContent = '';
+      }
+      memoryFlippedCards = [];
+      memoryCanFlip = true;
+      if (memoryMatchedCards.length === memoryCards.length) {
+        if (memoryCurrentLevel < 10) {
+          memoryCurrentLevel++;
+          const levelText = document.getElementById('memoryLevel');
+          levelText.style.transform = 'scale(1.3)';
+          levelText.style.color = 'gold';
+          setTimeout(() => {
+            levelText.style.transform = 'scale(1)';
+            levelText.style.color = 'white';
+          }, 500);
+          setTimeout(startMemoryLevel, 1000);
+        } else {
+          const gameBoard = document.getElementById('memoryBoard');
+          gameBoard.style.animation = 'celebrate 1s ease-in-out';
+          setTimeout(() => {
+            alert('Congratulations! You completed all levels!');
+            initMemoryGame();
+          }, 1000);
+        }
+      }
+    }
+    
+    // Avoid Game
+    let avoidPlayerLeft = 50, avoidScore = 0, avoidGameActive = true, avoidObstacleSpeed = 2, avoidMoveDirection = 0;
+    function initAvoidGame() {
+      const player = document.getElementById('player');
+      const gameContainer = document.getElementById('avoidGame');
+      const scoreDisplay = document.getElementById('avoidScore');
+      const gameOverDisplay = document.getElementById('avoidGameOver');
+      const finalScoreDisplay = document.getElementById('finalAvoidScore');
+      const leftBtn = document.getElementById('avoid-left-btn');
+      const rightBtn = document.getElementById('avoid-right-btn');
+      avoidPlayerLeft = 50;
+      avoidScore = 0;
+      avoidGameActive = true;
+      avoidObstacleSpeed = 2;
+      scoreDisplay.textContent = `Score: ${avoidScore}`;
+      gameOverDisplay.style.display = 'none';
+      document.querySelectorAll('.obstacle').forEach(obstacle => obstacle.remove());
+      player.style.left = `${avoidPlayerLeft}%`;
+      if (gameIntervals.avoidGameInterval) clearInterval(gameIntervals.avoidGameInterval);
+      if (gameIntervals.avoidObstacleInterval) clearInterval(gameIntervals.avoidObstacleInterval);
+      if (gameIntervals.avoidScoreInterval) clearInterval(gameIntervals.avoidScoreInterval);
+      document.onkeydown = (event) => {
+        if (!avoidGameActive || activeGame !== 'avoidGame') return;
+        if (event.key === 'ArrowLeft') avoidMoveDirection = -1;
+        else if (event.key === 'ArrowRight') avoidMoveDirection = 1;
+      };
+      document.onkeyup = (event) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') avoidMoveDirection = 0;
+      };
+      leftBtn.addEventListener('touchstart', () => avoidMoveDirection = -1);
+      leftBtn.addEventListener('touchend', () => avoidMoveDirection = 0);
+      rightBtn.addEventListener('touchstart', () => avoidMoveDirection = 1);
+      rightBtn.addEventListener('touchend', () => avoidMoveDirection = 0);
+      leftBtn.addEventListener('mousedown', () => avoidMoveDirection = -1);
+      leftBtn.addEventListener('mouseup', () => avoidMoveDirection = 0);
+      rightBtn.addEventListener('mousedown', () => avoidMoveDirection = 1);
+      rightBtn.addEventListener('mouseup', () => avoidMoveDirection = 0);
+      gameIntervals.avoidGameInterval = setInterval(() => {
+        if (avoidMoveDirection !== 0 && avoidGameActive && activeGame === 'avoidGame') {
+          avoidPlayerLeft += avoidMoveDirection * 3;
+          if (avoidPlayerLeft < 0) avoidPlayerLeft = 0;
+          if (avoidPlayerLeft > 100) avoidPlayerLeft = 100;
+          player.style.left = `${avoidPlayerLeft}%`;
+        }
+      }, 16);
+      gameIntervals.avoidObstacleInterval = setInterval(createObstacle, 1000);
+      gameIntervals.avoidScoreInterval = setInterval(updateAvoidScore, 100);
+      function createObstacle() {
+        if (!avoidGameActive || activeGame !== 'avoidGame') return;
+        const obstacle = document.createElement('div');
+        obstacle.classList.add('obstacle');
+        obstacle.style.left = `${Math.random() * 90}%`;
+        const colors = ['#333', '#444', '#555', '#666'];
+        obstacle.style.background = `linear-gradient(145deg, ${colors[Math.floor(Math.random() * colors.length)]}, #222)`;
+        gameContainer.appendChild(obstacle);
+        let obstacleTop = 0;
+        const fallInterval = setInterval(() => {
+          if (!avoidGameActive || activeGame !== 'avoidGame') {
+            clearInterval(fallInterval);
+            gameContainer.removeChild(obstacle);
+            return;
+          }
+          obstacleTop += avoidObstacleSpeed;
+          obstacle.style.top = `${obstacleTop}px`;
+          if (obstacleTop + 50 >= gameContainer.offsetHeight - 70 &&
+              parseInt(obstacle.style.left) >= avoidPlayerLeft - 10 &&
+              parseInt(obstacle.style.left) <= avoidPlayerLeft + 10) {
+            avoidGameActive = false;
+            finalScoreDisplay.textContent = avoidScore;
+            gameOverDisplay.style.display = 'block';
+            const explosion = document.createElement('div');
+            explosion.style.position = 'absolute';
+            explosion.style.left = obstacle.style.left;
+            explosion.style.top = `${gameContainer.offsetHeight - 70}px`;
+            explosion.style.width = '60px';
+            explosion.style.height = '60px';
+            explosion.style.borderRadius = '50%';
+            explosion.style.background = 'radial-gradient(circle, red, orange)';
+            explosion.style.opacity = '0.8';
+            explosion.style.transform = 'scale(0)';
+            gameContainer.appendChild(explosion);
+            setTimeout(() => {
+              explosion.style.transform = 'scale(2)';
+              explosion.style.opacity = '0';
+            }, 10);
+            setTimeout(() => gameContainer.removeChild(explosion), 300);
+            clearInterval(fallInterval);
+          }
+          if (obstacleTop >= gameContainer.offsetHeight) {
+            gameContainer.removeChild(obstacle);
+            clearInterval(fallInterval);
+          }
+        }, 20);
+      }
+      function updateAvoidScore() {
+        if (!avoidGameActive || activeGame !== 'avoidGame') return;
+        avoidScore++;
+        scoreDisplay.textContent = `Score: ${avoidScore}`;
+        if (avoidScore % 100 === 0) {
+          scoreDisplay.style.transform = 'scale(1.2)';
+          scoreDisplay.style.color = 'gold';
+          setTimeout(() => {
+            scoreDisplay.style.transform = 'scale(1)';
+            scoreDisplay.style.color = 'white';
+          }, 200);
+          avoidObstacleSpeed += 0.5;
+        }
+      }
+      gameContainer.onclick = (e) => {
+        if (e.target.classList.contains('back-btn') || e.target.classList.contains('mobile-btn')) return;
+        if (!avoidGameActive) initAvoidGame();
+      };
+    }
+
+    // Snake Game
+    const snakeCanvas = document.getElementById('snake-canvas');
+    const snakeCtx = snakeCanvas.getContext('2d');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    const gridSize = 20;
+    const tileCount = snakeCanvas.width / gridSize;
+    let snake = [{ x: 10, y: 10 }];
+    let direction = { x: 0, y: 0 };
+    let food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+    let snakeScore = 0;
+    let gameSpeed = 100;
+    let snakeGameLoop;
+    function gameLoop() {
+      updateSnake();
+      drawSnake();
+    }
+    function updateSnake() {
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+      if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+        resetSnakeGame();
+        return;
+      }
+      if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        resetSnakeGame();
+        return;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        snakeScore++;
+        food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+        while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+          food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+        }
+      } else {
+        snake.pop();
+      }
+    }
+    function drawSnake() {
+      snakeCtx.clearRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+      const snakeGradient = snakeCtx.createLinearGradient(0, 0, snakeCanvas.width, snakeCanvas.height);
+      snakeGradient.addColorStop(0, '#4CAF50');
+      snakeGradient.addColorStop(1, '#45a049');
+      snakeCtx.fillStyle = snakeGradient;
+      snake.forEach((segment, index) => {
+        if (index === 0) snakeCtx.fillStyle = '#FF5722';
+        snakeCtx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+        if (index === 0) {
+          snakeCtx.fillStyle = 'white';
+          if (direction.x === 1) {
+            snakeCtx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 5, 4, 4);
+            snakeCtx.fillRect(segment.x * gridSize + 12, segment.y * gridSize + 11, 4, 4);
+          } else if (direction.x === -1) {
+            snakeCtx.fillRect(segment.x * gridSize + 4, segment.y * gridSize + 5, 4, 4);
+            snakeCtx.fillRect(segment.x * gridSize + 4, segment.y * gridSize + 11, 4, 4);
+          } else if (direction.y === -1) {
+            snakeCtx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 4, 4, 4);
+            snakeCtx.fillRect(segment.x * gridSize + 11, segment.y * gridSize + 4, 4, 4);
+          } else {
+            snakeCtx.fillRect(segment.x * gridSize + 5, segment.y * gridSize + 12, 4, 4);
+            snakeCtx.fillRect(segment.x * gridSize + 11, segment.y * gridSize + 12, 4, 4);
+          }
+        }
+      });
+      const time = Date.now() * 0.002;
+      const pulse = Math.abs(Math.sin(time * 2)) * 0.2 + 0.8;
+      snakeCtx.fillStyle = `rgba(255, 0, 0, ${pulse})`;
+      snakeCtx.beginPath();
+      snakeCtx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 2 * pulse, 0, Math.PI * 2);
+      snakeCtx.fill();
+      snakeCtx.fillStyle = 'white';
+      snakeCtx.font = '24px Arial';
+      snakeCtx.fillText('Score: ' + snakeScore, 10, 30);
+    }
+    function resetSnakeGame() {
+      if (snakeGameLoop) clearInterval(snakeGameLoop);
+      setTimeout(() => {
+        snake = [{ x: 10, y: 10 }];
+        direction = { x: 0, y: 0 };
+        snakeScore = 0;
+        food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+        if (activeGame === 'snakeGame') snakeGameLoop = setInterval(gameLoop, gameSpeed);
+      }, 1000);
+    }
+    function startSnakeGame() {
+      if (snakeGameLoop) clearInterval(snakeGameLoop);
+      resetSnakeGame();
+    }
+    speedSlider.addEventListener('input', function() {
+      gameSpeed = 350 - this.value;
+      speedValue.textContent = this.value;
+      if (activeGame === 'snakeGame') startSnakeGame();
+    });
+    window.addEventListener('keydown', e => {
+      if (activeGame !== 'snakeGame') return;
+      switch (e.key) {
+        case 'ArrowUp': if (direction.y === 0) direction = { x: 0, y: -1 }; break;
+        case 'ArrowDown': if (direction.y === 0) direction = { x: 0, y: 1 }; break;
+        case 'ArrowLeft': if (direction.x === 0) direction = { x: -1, y: 0 }; break;
+        case 'ArrowRight': if (direction.x === 0) direction = { x: 1, y: 0 }; break;
+      }
+    });
+
+    // Guess Game
+    let randomNumber = Math.floor(Math.random() * 100) + 1;
+    const guessField = document.querySelector('.guessField');
+    const guessSubmit = document.querySelector('.guessSubmit');
+    const guesses = document.querySelector('.guesses');
+    const lastResult = document.querySelector('.lastResult');
+    const lowOrHi = document.querySelector('.lowOrHi');
+    let guessCount = 1;
+    let resetButton;
+    function checkGuess() {
+      const userGuess = Number(guessField.value);
+      if (guessCount === 1) guesses.textContent = 'Previous guesses: ';
+      guesses.textContent += userGuess + ' ';
+      if (userGuess === randomNumber) {
+        lastResult.textContent = 'Congratulations! You got it right!';
+        lastResult.style.color = '#4ecdc4';
+        lowOrHi.textContent = '';
+        setGuessGameOver();
+      } else if (guessCount === 10) {
+        lastResult.textContent = '!!!GAME OVER!!!';
+        lastResult.style.color = '#ff6b6b';
+        lowOrHi.textContent = `The number was ${randomNumber}`;
+        setGuessGameOver();
+      } else {
+        lastResult.textContent = 'Wrong!';
+        lastResult.style.color = '#ff6b6b';
+        if (userGuess < randomNumber) lowOrHi.textContent = 'Last guess was too low!';
+        else if (userGuess > randomNumber) lowOrHi.textContent = 'Last guess was too high!';
+      }
+      guessCount++;
+      guessField.value = '';
+      guessField.focus();
+    }
+    guessSubmit.addEventListener('click', checkGuess);
+    function setGuessGameOver() {
+      guessField.disabled = true;
+      guessSubmit.disabled = true;
+      resetButton = document.createElement('button');
+      resetButton.textContent = 'Start New Game';
+      resetButton.classList.add('resetButton');
+      document.querySelector('.guess-container').appendChild(resetButton);
+      resetButton.addEventListener('click', resetGuessGame);
+    }
+    function resetGuessGame() {
+      guessCount = 1;
+      const resultParas = document.querySelectorAll('.resultParas p');
+      for (const resultPara of resultParas) resultPara.textContent = '';
+      resetButton.remove();
+      guessField.disabled = false;
+      guessSubmit.disabled = false;
+      guessField.value = '';
+      guessField.focus();
+      lastResult.style.color = '#ff6b6b';
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+    }
+
+    // Flappy Bird
+    const flappyGame = document.getElementById("flappy-game");
+    const flappyBird = document.getElementById("flappy-bird");
+    const flappyScoreDisplay = document.getElementById("flappy-score");
+    const flappyGameOverScreen = document.getElementById("flappy-game-over");
+    const flappyFinalScoreDisplay = document.getElementById("flappy-final-score");
+    const flappyRestartButton = document.getElementById("flappy-restart-button");
+    let flappyBirdTop = 250, flappyGravity = 0.6, flappyJumpStrength = -10, flappyVelocity = 0, flappyScore = 0, flappyGameActive = true;
+    function jump() {
+      if (flappyGameActive && activeGame === 'flappyGame') {
+        flappyVelocity = flappyJumpStrength;
+        flappyBird.style.transform = 'rotate(-20deg)';
+        setTimeout(() => flappyBird.style.transform = 'rotate(0deg)', 200);
+      }
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && activeGame === 'flappyGame') jump();
+    });
+    flappyGame.addEventListener("click", jump);
+    function createFlappyPipe() {
+      if (!flappyGameActive || activeGame !== 'flappyGame') return;
+      const pipeGap = 150;
+      const pipeHeight = Math.random() * (flappyGame.clientHeight - pipeGap - 100) + 50;
+      const pipeTop = document.createElement("div");
+      const pipeBottom = document.createElement("div");
+      pipeTop.classList.add("flappy-pipe");
+      pipeBottom.classList.add("flappy-pipe");
+      pipeTop.style.top = "0";
+      pipeTop.style.left = flappyGame.clientWidth + "px";
+      pipeTop.style.height = pipeHeight + "px";
+      pipeBottom.style.bottom = "0";
+      pipeBottom.style.left = flappyGame.clientWidth + "px";
+      pipeBottom.style.height = (flappyGame.clientHeight - pipeHeight - pipeGap) + "px";
+      flappyGame.appendChild(pipeTop);
+      flappyGame.appendChild(pipeBottom);
+      let pipeLeft = flappyGame.clientWidth;
+      const pipeMoveInterval = setInterval(() => {
+        if (!flappyGameActive || activeGame !== 'flappyGame') {
+          clearInterval(pipeMoveInterval);
+          flappyGame.removeChild(pipeTop);
+          flappyGame.removeChild(pipeBottom);
+          return;
+        }
+        pipeLeft -= 2;
+        pipeTop.style.left = pipeLeft + "px";
+        pipeBottom.style.left = pipeLeft + "px";
+        if (pipeLeft < 90 && pipeLeft > 30 &&
+            (flappyBirdTop < pipeHeight || flappyBirdTop > pipeHeight + pipeGap - 50)) endFlappyGame();
+        if (pipeLeft === 50) {
+          flappyScore++;
+          flappyScoreDisplay.textContent = flappyScore;
+          flappyScoreDisplay.style.transform = 'scale(1.3)';
+          flappyScoreDisplay.style.color = 'gold';
+          setTimeout(() => {
+            flappyScoreDisplay.style.transform = 'scale(1)';
+            flappyScoreDisplay.style.color = 'white';
+          }, 200);
+        }
+        if (pipeLeft < -80) {
+          clearInterval(pipeMoveInterval);
+          flappyGame.removeChild(pipeTop);
+          flappyGame.removeChild(pipeBottom);
+        }
+      }, 20);
+    }
+    function endFlappyGame() {
+      flappyGameActive = false;
+      flappyFinalScoreDisplay.textContent = flappyScore;
+      flappyGameOverScreen.style.display = "block";
+      flappyBird.style.transform = 'rotate(90deg)';
+      flappyBird.style.transition = 'transform 0.5s ease-out';
+      document.querySelectorAll(".flappy-pipe").forEach(pipe => {
+        pipe.style.transition = 'transform 0.5s ease-out';
+        pipe.style.transform = 'scaleY(0)';
+        setTimeout(() => flappyGame.removeChild(pipe), 500);
+      });
+    }
+    flappyRestartButton.addEventListener("click", () => {
+      flappyBirdTop = 250;
+      flappyVelocity = 0;
+      flappyScore = 0;
+      flappyScoreDisplay.textContent = flappyScore;
+      flappyGameOverScreen.style.display = "none";
+      flappyGameActive = true;
+      flappyBird.style.top = flappyBirdTop + "px";
+      flappyBird.style.transform = 'rotate(0deg)';
+      document.querySelectorAll(".flappy-pipe").forEach(pipe => pipe.remove());
+      if (gameIntervals.flappyGameInterval) clearInterval(gameIntervals.flappyGameInterval);
+      if (gameIntervals.flappyPipeInterval) clearInterval(gameIntervals.flappyPipeInterval);
+      gameIntervals.flappyGameInterval = setInterval(updateFlappyBird, 20);
+      gameIntervals.flappyPipeInterval = setInterval(createFlappyPipe, 2000);
+    });
+    function updateFlappyBird() {
+      if (!flappyGameActive || activeGame !== 'flappyGame') return;
+      flappyVelocity += flappyGravity;
+      flappyBirdTop += flappyVelocity;
+      flappyBird.style.top = flappyBirdTop + "px";
+      const rotation = Math.min(Math.max(flappyVelocity * 3, -20), 20);
+      flappyBird.style.transform = `rotate(${rotation}deg)`;
+      if (flappyBirdTop > flappyGame.clientHeight - 50 || flappyBirdTop < 0) endFlappyGame();
+    }
+    function startFlappyGame() {
+      flappyGameActive = true;
+      flappyBirdTop = 250;
+      flappyVelocity = 0;
+      flappyScore = 0;
+      flappyScoreDisplay.textContent = flappyScore;
+      flappyGameOverScreen.style.display = "none";
+      document.querySelectorAll(".flappy-pipe").forEach(pipe => pipe.remove());
+      if (gameIntervals.flappyGameInterval) clearInterval(gameIntervals.flappyGameInterval);
+      if (gameIntervals.flappyPipeInterval) clearInterval(gameIntervals.flappyPipeInterval);
+      gameIntervals.flappyGameInterval = setInterval(updateFlappyBird, 20);
+      gameIntervals.flappyPipeInterval = setInterval(createFlappyPipe, 2000);
+    }
+
+    // Breakout
+    let breakoutGameActive = false;
+    function startBreakoutGame() {
+      const canvas = document.getElementById('breakoutCanvas');
+      const ctx = canvas.getContext('2d');
+      let ballRadius = 10;
+      let x = canvas.width / 2;
+      let y = canvas.height - 30;
+      let dx = 4;
+      let dy = -4;
+      let paddleHeight = 10;
+      let paddleWidth = 100;
+      let paddleX = (canvas.width - paddleWidth) / 2;
+      let rightPressed = false;
+      let leftPressed = false;
+      let score = 0;
+      let lives = 3;
+      let level = 1;
+      let targetScore = 4;
+      let brickRowCount = 2;
+      let brickColumnCount = 3;
+      let brickWidth = 75;
+      let brickHeight = 20;
+      let brickPadding = 10;
+      let brickOffsetTop = 30;
+      let brickOffsetLeft = 30;
+      let bricks = [];
+      breakoutGameActive = true;
+      function updateScoreDisplay() {
+        document.getElementById('breakoutScore').textContent = score;
+        document.getElementById('breakoutLevel').textContent = level;
+        document.getElementById('breakoutTarget').textContent = targetScore;
+        document.getElementById('breakoutLives').textContent = lives;
+      }
+      function initBricks() {
+        bricks = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+          bricks[c] = [];
+          for (let r = 0; r < brickRowCount; r++) {
+            const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+            const colors = ['#0095DD', '#FF5733', '#4CAF50', '#FFC300', '#9B59B6'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            bricks[c][r] = { x: brickX, y: brickY, status: 1, color: color };
+          }
+        }
+      }
+      function keyDownHandler(e) {
+        if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = true;
+        else if (e.key === 'Left' || e.key === 'ArrowLeft') leftPressed = true;
+      }
+      function keyUpHandler(e) {
+        if (e.key === 'Right' || e.key === 'ArrowRight') rightPressed = false;
+        else if (e.key === 'Left' || e.key === 'ArrowLeft') leftPressed = false;
+      }
+      document.addEventListener('keydown', keyDownHandler);
+      document.addEventListener('keyup', keyUpHandler);
+      function collisionDetection() {
+        for (let c = 0; c < brickColumnCount; c++) {
+          for (let r = 0; r < brickRowCount; r++) {
+            const b = bricks[c][r];
+            if (b.status === 1 && x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+              dy = -dy;
+              b.status = 0;
+              score++;
+              updateScoreDisplay();
+              if (score >= targetScore) {
+                if (level === 20) {
+                  breakoutGameActive = false;
+                  document.getElementById('breakoutGameOverText').textContent = 'You Win!';
+                  document.getElementById('breakoutFinalScore').textContent = score;
+                  document.getElementById('breakoutGameOver').style.display = 'block';
+                } else {
+                  level++;
+                  targetScore += 6;
+                  brickRowCount = Math.min(8, brickRowCount + 1);
+                  brickColumnCount = Math.min(10, brickColumnCount + 1);
+                  updateScoreDisplay();
+                  initBricks();
+                  x = canvas.width / 2;
+                  y = canvas.height - 30;
+                  dx += 0.5;
+                  dy -= 0.5;
+                  paddleWidth = Math.max(50, paddleWidth - 5);
+                  const levelDisplay = document.getElementById('breakoutLevel');
+                  levelDisplay.style.transform = 'scale(1.3)';
+                  levelDisplay.style.color = 'gold';
+                  setTimeout(() => {
+                    levelDisplay.style.transform = 'scale(1)';
+                    levelDisplay.style.color = 'white';
+                  }, 500);
+                }
+              }
+            }
+          }
+        }
+      }
+      function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(x - ballRadius/2, y - ballRadius/2, 1, x, y, ballRadius);
+        gradient.addColorStop(0, '#ffffff');
+        gradient.addColorStop(1, '#cccccc');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+      function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        const gradient = ctx.createLinearGradient(paddleX, canvas.height - paddleHeight, paddleX, canvas.height);
+        gradient.addColorStop(0, '#ffffff');
+        gradient.addColorStop(1, '#666666');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+      }
+      function drawBricks() {
+        for (let c = 0; c < brickColumnCount; c++) {
+          for (let r = 0; r < brickRowCount; r++) {
+            if (bricks[c][r].status === 1) {
+              const b = bricks[c][r];
+              ctx.beginPath();
+              ctx.rect(b.x, b.y, brickWidth, brickHeight);
+              const gradient = ctx.createLinearGradient(b.x, b.y, b.x + brickWidth, b.y + brickHeight);
+              gradient.addColorStop(0, b.color);
+              gradient.addColorStop(1, darkenColor(b.color, 20));
+              ctx.fillStyle = gradient;
+              ctx.fill();
+              ctx.strokeStyle = darkenColor(b.color, 30);
+              ctx.lineWidth = 1;
+              ctx.strokeRect(b.x, b.y, brickWidth, brickHeight);
+            }
+          }
+        }
+      }
+      function darkenColor(color, percent) {
+        const num = parseInt(color.replace("#", ""), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) - amt;
+        const G = (num >> 8 & 0x00FF) - amt;
+        const B = (num & 0x0000FF) - amt;
+        return "#" + (0x1000000 + (R < 0 ? 0 : R) * 0x10000 + (G < 0 ? 0 : G) * 0x100 + (B < 0 ? 0 : B)).toString(16).slice(1);
+      }
+      function draw() {
+        if (!breakoutGameActive || activeGame !== 'breakoutGame') return;
+        const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        bgGradient.addColorStop(0, '#111111');
+        bgGradient.addColorStop(1, '#333333');
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawBricks();
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) dx = -dx;
+        if (y + dy < ballRadius) dy = -dy;
+        else if (y + dy > canvas.height - ballRadius) {
+          if (x > paddleX && x < paddleX + paddleWidth) {
+            const hitPosition = (x - paddleX) / paddleWidth;
+            const angle = hitPosition * Math.PI - Math.PI/2;
+            const speed = Math.sqrt(dx*dx + dy*dy) * 1.02;
+            dx = Math.cos(angle) * speed;
+            dy = Math.sin(angle) * speed;
+          } else {
+            lives--;
+            updateScoreDisplay();
+            if (lives === 0) {
+              breakoutGameActive = false;
+              document.getElementById('breakoutGameOverText').textContent = 'Game Over!';
+              document.getElementById('breakoutFinalScore').textContent = score;
+              document.getElementById('breakoutGameOver').style.display = 'block';
+            } else {
+              x = canvas.width / 2;
+              y = canvas.height - 30;
+              dx = 4;
+              dy = -4;
+              paddleX = (canvas.width - paddleWidth) / 2;
+              const livesDisplay = document.getElementById('breakoutLives');
+              livesDisplay.style.transform = 'scale(1.5)';
+              livesDisplay.style.color = 'red';
+              setTimeout(() => {
+                livesDisplay.style.transform = 'scale(1)';
+                livesDisplay.style.color = 'white';
+              }, 300);
+            }
+          }
+        }
+        if (rightPressed && paddleX < canvas.width - paddleWidth) paddleX += 7;
+        else if (leftPressed && paddleX > 0) paddleX -= 7;
+        x += dx;
+        y += dy;
+        requestAnimationFrame(draw);
+      }
+      function restartBreakoutGame() {
+        breakoutGameActive = true;
+        document.getElementById('breakoutGameOver').style.display = 'none';
+        score = 0;
+        lives = 3;
+        level = 1;
+        targetScore = 4;
+        brickRowCount = 2;
+        brickColumnCount = 3;
+        paddleWidth = 100;
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = 4;
+        dy = -4;
+        updateScoreDisplay();
+        initBricks();
+        draw();
+      }
+      document.getElementById('breakoutRestartButton').addEventListener('click', restartBreakoutGame);
+      updateScoreDisplay();
+      initBricks();
+      draw();
+    }
+
+    // Dot Game
+    function startDotGame() {
+      let score = 0, timeLeft = 10, dotGameActive = true;
+      const dot = document.getElementById('dot');
+      const scoreDisplay = document.getElementById('dotScore');
+      const timerDisplay = document.getElementById('dotTimer');
+      const restartButton = document.getElementById('dotRestartButton');
+      const container = document.querySelector('.dot-container');
+      function moveDot() {
+        if (!dotGameActive || activeGame !== 'dotGame') return;
+        const containerRect = container.getBoundingClientRect();
+        const maxX = containerRect.width - 40;
+        const maxY = containerRect.height - 150;
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        dot.style.animation = 'pulse 0.5s';
+        setTimeout(() => dot.style.animation = '', 500);
+      }
+      function resetDotGame() {
+        dotGameActive = true;
+        score = 0;
+        timeLeft = 10;
+        scoreDisplay.textContent = `Score: ${score}`;
+        timerDisplay.textContent = `Time left: ${timeLeft}`;
+        dot.style.display = 'block';
+        restartButton.style.display = 'none';
+        moveDot();
+        startDotTimer();
+      }
+      dot.addEventListener('click', () => {
+        if (!dotGameActive || timeLeft <= 0) return;
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+        scoreDisplay.style.transform = 'scale(1.2)';
+        scoreDisplay.style.color = 'gold';
+        setTimeout(() => {
+          scoreDisplay.style.transform = 'scale(1)';
+          scoreDisplay.style.color = 'white';
+        }, 200);
+        dot.style.transform = 'scale(0.8)';
+        setTimeout(() => dot.style.transform = 'scale(1)', 100);
+        moveDot();
+      });
+      restartButton.addEventListener('click', resetDotGame);
+      function startDotTimer() {
+        if (gameIntervals.dotTimer) clearInterval(gameIntervals.dotTimer);
+        gameIntervals.dotTimer = setInterval(() => {
+          if (!dotGameActive || activeGame !== 'dotGame') {
+            clearInterval(gameIntervals.dotTimer);
+            return;
+          }
+          timeLeft--;
+          timerDisplay.textContent = `Time left: ${timeLeft}`;
+          if (timeLeft <= 5) {
+            timerDisplay.style.color = 'red';
+            timerDisplay.style.animation = 'pulse 0.5s infinite';
+          }
+          if (timeLeft <= 0) {
+            dotGameActive = false;
+            clearInterval(gameIntervals.dotTimer);
+            dot.style.display = 'none';
+            restartButton.style.display = 'block';
+            timerDisplay.style.animation = '';
+            scoreDisplay.style.fontSize = '32px';
+            scoreDisplay.style.color = 'gold';
+            setTimeout(() => scoreDisplay.style.fontSize = '24px', 500);
+          }
+        }, 1000);
+      }
+      resetDotGame();
+    }
+
+    document.querySelector('.menu-button').click();
+    const style = document.createElement('style');
+    style.textContent = `@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } } @keyframes celebrate { 0% { transform: scale(1); } 25% { transform: scale(1.1) rotate(5deg); } 50% { transform: scale(1.1) rotate(-5deg); } 75% { transform: scale(1.1) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
